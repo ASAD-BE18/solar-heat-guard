@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>solar-heat-guard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html, body, #map { height: 100%; margin: 0; }
+  #panel {
+    position: absolute; top: 12px; right: 12px; z-index: 1000;
+    background: rgba(255,255,255,0.95); padding: 12px 14px; border-radius: 8px;
+    font-family: system-ui, sans-serif; font-size: 13px; max-width: 260px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+  }
+  #panel h1 { font-size: 15px; margin: 0 0 6px; }
+  #panel .legend-item { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  #panel .swatch { width: 14px; height: 14px; border-radius: 2px; flex: none; }
+  #panel .stat { margin-top: 8px; color: #333; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+  <h1>solar-heat-guard</h1>
+  <div id="legend"></div>
+  <div id="stats" class="stat"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="data.js"></script>
+<script>
+// PANEL_ROWS features may carry either the PV-model properties
+// (cell_temperature_c, power_loss_percent, at_risk) or the simpler
+// tcm/exceedance properties (tile_value, at_risk) -- render whichever
+// is present rather than assuming one schema.
+function hasPvModel(features) {
+  return features.some(f => f.properties.cell_temperature_c != null);
+}
+
+function rowColor(props, pvModel) {
+  if (!pvModel) return props.at_risk ? "#d73027" : "#4575b4";
+  const t = props.cell_temperature_c;
+  if (t == null) return "#999";
+  // blue (cool) -> yellow -> red (hot), scaled across a plausible cell-temp range
+  const lo = 40, hi = 90;
+  const frac = Math.max(0, Math.min(1, (t - lo) / (hi - lo)));
+  const r = Math.round(255 * Math.min(1, frac * 2));
+  const g = Math.round(255 * (1 - Math.abs(frac - 0.5) * 2));
+  const b = Math.round(255 * Math.min(1, (1 - frac) * 2));
+  return `rgb(${r},${g},${b})`;
+}
+
+const map = L.map("map");
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors",
+  maxZoom: 20,
+}).addTo(map);
+
+L.geoJSON(SITE_BOUNDARY, {
+  style: { color: "#333", weight: 2, fillOpacity: 0 },
+}).addTo(map);
+
+const pvModel = hasPvModel(PANEL_ROWS.features);
+
+const rowsLayer = L.geoJSON(PANEL_ROWS, {
+  style: f => ({ color: rowColor(f.properties, pvModel), weight: 1, fillOpacity: 0.85 }),
+  onEachFeature: (f, layer) => {
+    const p = f.properties;
+    let html = `<b>Row ${p.row_id}</b><br>`;
+    if (pvModel) {
+      html += `Ambient: ${p.ambient_temperature_c?.toFixed(1)} &deg;C<br>`;
+      html += `GHI: ${p.ghi_w_m2?.toFixed(0)} W/m&sup2;<br>`;
+      html += `Cell temp: ${p.cell_temperature_c?.toFixed(1)} &deg;C<br>`;
+      html += `Power loss: ${p.power_loss_percent?.toFixed(1)}%<br>`;
+    } else {
+      html += `${p.value_field}: ${p.tile_value}<br>`;
+    }
+    html += `<b>${p.at_risk ? "AT RISK" : "ok"}</b>`;
+    layer.bindPopup(html);
+  },
+}).addTo(map);
+
+map.fitBounds(rowsLayer.getBounds());
+
+const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
+document.getElementById("stats").textContent =
+  `${atRiskCount} / ${PANEL_ROWS.features.length} rows at risk`;
+
+const legend = document.getElementById("legend");
+if (pvModel) {
+  legend.innerHTML = `
+    <div class="legend-item"><div class="swatch" style="background:rgb(0,0,255)"></div>cooler cell temp</div>
+    <div class="legend-item"><div class="swatch" style="background:rgb(255,255,0)"></div>mid</div>
+    <div class="legend-item"><div class="swatch" style="background:rgb(255,0,0)"></div>hotter cell temp</div>`;
+} else {
+  legend.innerHTML = `
+    <div class="legend-item"><div class="swatch" style="background:#d73027"></div>at risk</div>
+    <div class="legend-item"><div class="swatch" style="background:#4575b4"></div>ok</div>`;
+}
+</script>
+</body>
+</html>

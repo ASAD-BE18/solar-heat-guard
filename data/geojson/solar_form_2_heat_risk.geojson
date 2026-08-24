@@ -38,8 +38,8 @@
       "properties": {
         "row_id": 1,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 4.0964,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -74,8 +74,8 @@
       "properties": {
         "row_id": 2,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 4.0481,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -110,8 +110,8 @@
       "properties": {
         "row_id": 3,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9604,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -146,7 +146,7 @@
       "properties": {
         "row_id": 4,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8341,
         "at_risk": false
       },
       "geometry": {
@@ -182,7 +182,7 @@
       "properties": {
         "row_id": 5,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -218,7 +218,7 @@
       "properties": {
         "row_id": 6,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -254,7 +254,7 @@
       "properties": {
         "row_id": 7,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -290,7 +290,7 @@
       "properties": {
         "row_id": 8,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -326,7 +326,7 @@
       "properties": {
         "row_id": 9,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -362,7 +362,7 @@
       "properties": {
         "row_id": 10,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6792,
         "at_risk": false
       },
       "geometry": {
@@ -398,7 +398,7 @@
       "properties": {
         "row_id": 11,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -434,7 +434,7 @@
       "properties": {
         "row_id": 12,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -470,7 +470,7 @@
       "properties": {
         "row_id": 13,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -506,7 +506,7 @@
       "properties": {
         "row_id": 14,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -542,7 +542,7 @@
       "properties": {
         "row_id": 15,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -578,7 +578,7 @@
       "properties": {
         "row_id": 16,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -614,7 +614,7 @@
       "properties": {
         "row_id": 17,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -650,7 +650,7 @@
       "properties": {
         "row_id": 18,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -686,7 +686,7 @@
       "properties": {
         "row_id": 19,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -722,7 +722,7 @@
       "properties": {
         "row_id": 20,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -758,7 +758,7 @@
       "properties": {
         "row_id": 21,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -794,7 +794,7 @@
       "properties": {
         "row_id": 22,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -830,7 +830,7 @@
       "properties": {
         "row_id": 23,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -866,7 +866,7 @@
       "properties": {
         "row_id": 24,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -902,7 +902,7 @@
       "properties": {
         "row_id": 25,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -938,7 +938,7 @@
       "properties": {
         "row_id": 26,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -974,7 +974,7 @@
       "properties": {
         "row_id": 27,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6765,
         "at_risk": false
       },
       "geometry": {
@@ -1010,7 +1010,7 @@
       "properties": {
         "row_id": 28,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1046,7 +1046,7 @@
       "properties": {
         "row_id": 29,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1082,7 +1082,7 @@
       "properties": {
         "row_id": 30,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1118,7 +1118,7 @@
       "properties": {
         "row_id": 31,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1154,7 +1154,7 @@
       "properties": {
         "row_id": 32,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1190,7 +1190,7 @@
       "properties": {
         "row_id": 33,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1226,7 +1226,7 @@
       "properties": {
         "row_id": 34,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1262,7 +1262,7 @@
       "properties": {
         "row_id": 35,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1298,7 +1298,7 @@
       "properties": {
         "row_id": 36,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1334,7 +1334,7 @@
       "properties": {
         "row_id": 37,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1370,7 +1370,7 @@
       "properties": {
         "row_id": 38,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1406,7 +1406,7 @@
       "properties": {
         "row_id": 39,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1442,7 +1442,7 @@
       "properties": {
         "row_id": 40,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1478,7 +1478,7 @@
       "properties": {
         "row_id": 41,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1514,7 +1514,7 @@
       "properties": {
         "row_id": 42,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1550,7 +1550,7 @@
       "properties": {
         "row_id": 43,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1586,7 +1586,7 @@
       "properties": {
         "row_id": 44,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6738,
         "at_risk": false
       },
       "geometry": {
@@ -1622,7 +1622,7 @@
       "properties": {
         "row_id": 45,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1658,7 +1658,7 @@
       "properties": {
         "row_id": 46,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1694,7 +1694,7 @@
       "properties": {
         "row_id": 47,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1730,7 +1730,7 @@
       "properties": {
         "row_id": 48,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1766,7 +1766,7 @@
       "properties": {
         "row_id": 49,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1802,7 +1802,7 @@
       "properties": {
         "row_id": 50,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1838,7 +1838,7 @@
       "properties": {
         "row_id": 51,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1874,7 +1874,7 @@
       "properties": {
         "row_id": 52,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1910,7 +1910,7 @@
       "properties": {
         "row_id": 53,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1946,7 +1946,7 @@
       "properties": {
         "row_id": 54,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -1982,7 +1982,7 @@
       "properties": {
         "row_id": 55,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -2022,7 +2022,7 @@
       "properties": {
         "row_id": 56,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.4979,
         "at_risk": false
       },
       "geometry": {
@@ -2058,7 +2058,7 @@
       "properties": {
         "row_id": 57,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.4979,
         "at_risk": false
       },
       "geometry": {
@@ -2094,7 +2094,7 @@
       "properties": {
         "row_id": 58,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.4979,
         "at_risk": false
       },
       "geometry": {
@@ -2130,7 +2130,7 @@
       "properties": {
         "row_id": 59,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.4979,
         "at_risk": false
       },
       "geometry": {
@@ -2174,7 +2174,7 @@
       "properties": {
         "row_id": 60,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -2210,7 +2210,7 @@
       "properties": {
         "row_id": 61,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6711,
         "at_risk": false
       },
       "geometry": {
@@ -2246,7 +2246,7 @@
       "properties": {
         "row_id": 62,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2282,7 +2282,7 @@
       "properties": {
         "row_id": 63,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2318,7 +2318,7 @@
       "properties": {
         "row_id": 64,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2354,7 +2354,7 @@
       "properties": {
         "row_id": 65,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2390,7 +2390,7 @@
       "properties": {
         "row_id": 66,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2426,7 +2426,7 @@
       "properties": {
         "row_id": 67,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2462,7 +2462,7 @@
       "properties": {
         "row_id": 68,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2498,7 +2498,7 @@
       "properties": {
         "row_id": 69,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2534,7 +2534,7 @@
       "properties": {
         "row_id": 70,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2570,7 +2570,7 @@
       "properties": {
         "row_id": 71,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2606,7 +2606,7 @@
       "properties": {
         "row_id": 72,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2642,7 +2642,7 @@
       "properties": {
         "row_id": 73,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2678,7 +2678,7 @@
       "properties": {
         "row_id": 74,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2714,7 +2714,7 @@
       "properties": {
         "row_id": 75,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2750,7 +2750,7 @@
       "properties": {
         "row_id": 76,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2786,7 +2786,7 @@
       "properties": {
         "row_id": 77,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2822,7 +2822,7 @@
       "properties": {
         "row_id": 78,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6684,
         "at_risk": false
       },
       "geometry": {
@@ -2858,7 +2858,7 @@
       "properties": {
         "row_id": 79,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6657,
         "at_risk": false
       },
       "geometry": {
@@ -2894,7 +2894,7 @@
       "properties": {
         "row_id": 80,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6657,
         "at_risk": false
       },
       "geometry": {
@@ -2930,7 +2930,7 @@
       "properties": {
         "row_id": 81,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6657,
         "at_risk": false
       },
       "geometry": {
@@ -2966,7 +2966,7 @@
       "properties": {
         "row_id": 82,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.6657,
         "at_risk": false
       },
       "geometry": {
@@ -3002,7 +3002,7 @@
       "properties": {
         "row_id": 83,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3038,7 +3038,7 @@
       "properties": {
         "row_id": 84,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3074,7 +3074,7 @@
       "properties": {
         "row_id": 85,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3110,7 +3110,7 @@
       "properties": {
         "row_id": 86,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3146,7 +3146,7 @@
       "properties": {
         "row_id": 87,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3182,7 +3182,7 @@
       "properties": {
         "row_id": 88,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3218,7 +3218,7 @@
       "properties": {
         "row_id": 89,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3254,7 +3254,7 @@
       "properties": {
         "row_id": 90,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3290,7 +3290,7 @@
       "properties": {
         "row_id": 91,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3326,7 +3326,7 @@
       "properties": {
         "row_id": 92,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3362,7 +3362,7 @@
       "properties": {
         "row_id": 93,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3398,7 +3398,7 @@
       "properties": {
         "row_id": 94,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3434,7 +3434,7 @@
       "properties": {
         "row_id": 95,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8224,
         "at_risk": false
       },
       "geometry": {
@@ -3470,7 +3470,7 @@
       "properties": {
         "row_id": 96,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3506,7 +3506,7 @@
       "properties": {
         "row_id": 97,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3542,7 +3542,7 @@
       "properties": {
         "row_id": 98,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3578,7 +3578,7 @@
       "properties": {
         "row_id": 99,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3614,7 +3614,7 @@
       "properties": {
         "row_id": 100,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3650,7 +3650,7 @@
       "properties": {
         "row_id": 101,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3686,7 +3686,7 @@
       "properties": {
         "row_id": 102,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3722,7 +3722,7 @@
       "properties": {
         "row_id": 103,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3758,7 +3758,7 @@
       "properties": {
         "row_id": 104,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3794,8 +3794,8 @@
       "properties": {
         "row_id": 105,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 4.1119,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3826,7 +3826,7 @@
       "properties": {
         "row_id": 106,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3862,7 +3862,7 @@
       "properties": {
         "row_id": 107,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3898,7 +3898,7 @@
       "properties": {
         "row_id": 108,
         "value_field": "value",
-        "tile_value": 0.0,
+        "tile_value": 3.8201,
         "at_risk": false
       },
       "geometry": {
@@ -3934,8 +3934,8 @@
       "properties": {
         "row_id": 109,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9497,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3970,8 +3970,8 @@
       "properties": {
         "row_id": 110,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9497,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4006,8 +4006,8 @@
       "properties": {
         "row_id": 111,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9497,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4042,8 +4042,8 @@
       "properties": {
         "row_id": 112,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9497,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4078,8 +4078,8 @@
       "properties": {
         "row_id": 113,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9497,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4114,8 +4114,8 @@
       "properties": {
         "row_id": 114,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4150,8 +4150,8 @@
       "properties": {
         "row_id": 115,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4186,8 +4186,8 @@
       "properties": {
         "row_id": 116,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4222,8 +4222,8 @@
       "properties": {
         "row_id": 117,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4258,8 +4258,8 @@
       "properties": {
         "row_id": 118,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4294,8 +4294,8 @@
       "properties": {
         "row_id": 119,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4330,8 +4330,8 @@
       "properties": {
         "row_id": 120,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4366,8 +4366,8 @@
       "properties": {
         "row_id": 121,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4402,8 +4402,8 @@
       "properties": {
         "row_id": 122,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4438,8 +4438,8 @@
       "properties": {
         "row_id": 123,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4474,8 +4474,8 @@
       "properties": {
         "row_id": 124,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4510,8 +4510,8 @@
       "properties": {
         "row_id": 125,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4546,8 +4546,8 @@
       "properties": {
         "row_id": 126,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4582,8 +4582,8 @@
       "properties": {
         "row_id": 127,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4618,8 +4618,8 @@
       "properties": {
         "row_id": 128,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4654,8 +4654,8 @@
       "properties": {
         "row_id": 129,
         "value_field": "value",
-        "tile_value": 0.0,
-        "at_risk": false
+        "tile_value": 3.9479,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",

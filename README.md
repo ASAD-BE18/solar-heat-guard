@@ -17,25 +17,47 @@ risk" signal.
 
 ## How it works
 
-```
-┌──────────────┐    ┌───────────────────┐    ┌─────────────────────┐
-│ site KML/     │ →  │ FortyGuard         │ →  │ overlay + classify   │
-│ GeoJSON       │    │ Create Heatmap API │    │ per panel row        │
-│ boundary      │    │ (temperature tiles)│    │ → heat_risk.geojson  │
-└──────────────┘    └───────────────────┘    └─────────────────────┘
-       ↑ panel rows approximated from row spacing/orientation
+```mermaid
+flowchart TD
+    KML["data/kml/*.kml<br/>Google Earth boundary export"] --> K2G["kml_to_geojson.py"]
+    K2G --> SITE["data/geojson/*.geojson<br/>site boundary"]
+
+    SITE --> PR["panel_rows.py<br/>approximate panel-row geometry"]
+    SITE --> HM["FortyGuard API<br/>POST /v1/heatmap (analytic_type=tcm)"]
+    SITE --> EP["FortyGuard API<br/>POST /v1/env_params (solar_irradiance)"]
+
+    HM --> TILES["per-tile ambient temperature"]
+    EP --> GHI["site GHI (W/m²)"]
+
+    PR --> OVERLAY["heat_risk.py<br/>match each row to its tile"]
+    TILES --> OVERLAY
+
+    OVERLAY --> PVM["pv_thermal.py<br/>NOCT cell-temp + power-loss model"]
+    GHI --> PVM
+
+    PVM --> RISK["*_heat_risk.geojson<br/>per row: cell temp, % power loss, at_risk"]
+    RISK --> VIZ["docs/index.html<br/>Leaflet map"]
+    VIZ --> PAGES["GitHub Pages"]
 ```
 
 1. **Boundary** -- the site polygon comes from a KML export (Google Earth),
-   converted to GeoJSON.
+   converted to GeoJSON (`kml_to_geojson.py`).
 2. **Panel rows** -- FortyGuard's satellite segmentation has no "solar panel"
    class, so individual rows are approximated ourselves: parallel strips at
-   a configurable pitch/width/orientation, clipped to the site boundary.
+   a configurable pitch/width/orientation, clipped to the site boundary
+   (`panel_rows.py`).
 3. **Heatmap** -- one request to FortyGuard's `Create Heatmap` endpoint
-   returns a grid of temperature tiles across the whole site (`tcm` snapshot,
-   or `exceedance`/`persistence` hours-above-threshold over a time window).
-4. **Overlay** -- each panel row is matched to the tile it falls in and
-   flagged against a risk threshold.
+   returns a grid of ambient/land-surface temperature tiles across the whole
+   site (`tcm`), or hours-above-threshold (`exceedance`/`persistence`).
+4. **Irradiance** -- one request to FortyGuard's `Environmental Parameters`
+   endpoint returns clear-sky solar irradiance (GHI) for the site.
+5. **PV thermal model** -- each panel row's tile temperature + the site's GHI
+   feed a standard NOCT cell-temperature model, then a linear temperature
+   coefficient gives an estimated % power loss per row (`pv_thermal.py`).
+6. **Output + visualization** -- rows are flagged `at_risk` (cell temp at/above
+   a configurable max operating temperature) and written to
+   `*_heat_risk.geojson`, rendered on a Leaflet map (`docs/index.html`)
+   published via GitHub Pages.
 
 ## Setup
 
@@ -57,17 +79,24 @@ python scripts/kml_to_geojson.py
 # 2. (optional, heat_risk.py does this too) preview the approximated panel rows
 python scripts/panel_rows.py data/geojson/solar_form_2.geojson
 
-# 3. Run the heat-risk check for a given date
+# 3. Run the heat-risk check for a given date (NOCT PV model, default on for tcm)
+python scripts/heat_risk.py data/geojson/solar_form_2.geojson \
+    --date 2024-07-15 --start-time 14:00 --analytic-type tcm
+
+# ...or the hours-above-threshold view instead of the PV model:
 python scripts/heat_risk.py data/geojson/solar_form_2.geojson \
     --date 2024-07-15 --start-time 06:00 --end-time 18:00 \
-    --analytic-type exceedance --threshold 40 --direction above
+    --analytic-type exceedance --threshold 35 --direction above --no-pv-model
 ```
 
-This submits one request to FortyGuard's API, polls until complete, and
+The `tcm` + PV-model run costs 2 FortyGuard requests (one heatmap, one
+irradiance); the `exceedance`/`persistence` view costs 1. Either way it
 writes `data/geojson/<site>_heat_risk.geojson` -- a FeatureCollection of
-panel-row polygons, each tagged with the analytic value from its tile and an
-`at_risk` flag. Load it into any GeoJSON-aware map viewer (geojson.io,
-kepler.gl, QGIS, Leaflet) to see risk spatially.
+panel-row polygons tagged with an `at_risk` flag (plus `cell_temperature_c`
+and `power_loss_percent` for the PV model). Load it into any GeoJSON-aware
+map viewer (geojson.io, kepler.gl, QGIS, Leaflet), or open `docs/index.html`
+/ the [GitHub Pages demo](https://asad-be18.github.io/solar-heat-guard/) to
+see risk spatially.
 
 **Picking `--date`:** FortyGuard's data has a processing lag -- very recent
 dates (e.g. "yesterday") can return zero tiles even though the request
@@ -86,11 +115,16 @@ will show more differentiation for a demo.
 - **Panel rows are approximated, not surveyed.** Default pitch/width/
   orientation (6 m / 2.5 m / north-south) come from eyeballing the row
   pattern in satellite imagery, not a real site layout.
-- **The risk threshold is a proxy.** FortyGuard's `tcm` layer reports
-  ambient/land-surface temperature, not panel surface temperature. The
-  threshold assumes panel surfaces run well above ambient under full sun --
-  it isn't a validated damage spec. Swap in real panel thermal ratings if
-  available.
+- **PV model constants are typical values, not this site's real spec.**
+  NOCT (44°C), temperature coefficient (-0.38%/°C), and the max operating
+  temperature cutoff (85°C) are standard utility-scale c-Si module figures,
+  overridable via `--noct`/`--temp-coeff`/`--max-operating-temp`. Swap in
+  real panel datasheet numbers if available.
+- **Irradiance is a clear-sky model, not a cloud-adjusted measurement.**
+  FortyGuard's `env_params` `solar_irradiance` is explicitly documented as
+  clear-sky GHI/DNI/DHI, and is queried once at the site centroid and
+  applied uniformly across all rows (reasonable at ~1km scale, since
+  irradiance doesn't vary much over that distance).
 - **FortyGuard's satellite segmentation has no "solar panel" class**
   (confirmed directly), which is why this project overlays heatmap tiles
   onto approximated geometry instead of using their segmentation endpoint.
@@ -102,10 +136,12 @@ will show more differentiation for a demo.
 ```
 data/kml/            KML site boundaries (Google Earth exports)
 data/geojson/         Converted boundaries + generated panel rows + risk output
+docs/                 Leaflet visualization, published via GitHub Pages
 scripts/
   kml_to_geojson.py   KML -> GeoJSON boundary conversion
   geo_utils.py        Local lon/lat <-> meters projection (site-scale accuracy)
   panel_rows.py       Approximate panel-row geometry generator
-  fortyguard_client.py FortyGuard API client (submit heatmap, poll status)
-  heat_risk.py        End-to-end pipeline: heatmap -> rows -> risk classification
+  fortyguard_client.py FortyGuard API client (heatmap, env_params, status polling)
+  pv_thermal.py       NOCT cell-temperature + power-loss model
+  heat_risk.py        End-to-end pipeline: heatmap + irradiance -> rows -> risk
 ```

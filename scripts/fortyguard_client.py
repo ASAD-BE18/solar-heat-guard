@@ -53,6 +53,30 @@ class FortyGuardClient:
             raise FortyGuardError(body.get("message", "heatmap submission failed"))
         return body["data"]["activity_id"]
 
+    def submit_env_params(self, latitude, longitude, temperature, date_time, analysis=None):
+        """Submit an Environmental Parameters job. Returns the activity_id.
+
+        temperature: ambient temperature in deg C (required input by this
+        endpoint). analysis: list of parameter names to return (e.g.
+        ["solar_irradiance"]); omit for all (capped at 3 on basic tier).
+        """
+        payload = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "temperature": temperature,
+            "date_time": date_time,
+        }
+        if analysis is not None:
+            payload["analysis"] = analysis
+
+        resp = requests.post(f"{self.api_base}/v1/env_params", headers=self._headers(),
+                              json=payload, timeout=30)
+        resp.raise_for_status()
+        body = resp.json()
+        if body.get("error"):
+            raise FortyGuardError(body.get("message", "env_params submission failed"))
+        return body["data"]["activity_id"]
+
     def check_status(self, activity_id):
         resp = requests.get(f"{self.api_base}/v1/status/{activity_id}",
                              headers=self._headers(), timeout=30)

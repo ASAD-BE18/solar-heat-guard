@@ -29,6 +29,7 @@ from shapely.prepared import prep
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fortyguard_client import FortyGuardClient
 from panel_rows import generate_rows
+import pv_thermal
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -50,46 +51,66 @@ def pick_value_field(tile_properties):
     return numeric_keys[0] if numeric_keys else None
 
 
+def find_tile_properties(centroid, prepared_tiles):
+    for prepared, props in prepared_tiles:
+        if prepared.contains(centroid):
+            return props
+    return None
+
+
 def classify_rows(row_polygons, tile_features, threshold, strict_greater=False):
     value_field = pick_value_field(tile_features[0]["properties"]) if tile_features else None
     prepared_tiles = [(prep(shape(f["geometry"])), f["properties"]) for f in tile_features]
 
     results = []
     for i, row in enumerate(row_polygons):
-        centroid = row.centroid
-        tile_props = None
-        for prepared, props in prepared_tiles:
-            if prepared.contains(centroid):
-                tile_props = props
-                break
+        tile_props = find_tile_properties(row.centroid, prepared_tiles)
         value = tile_props.get(value_field) if (tile_props and value_field) else None
         if value is None:
             at_risk = False
         else:
             at_risk = value > threshold if strict_greater else value >= threshold
         results.append({
-            "row_id": i,
             "geometry": row,
-            "value_field": value_field,
-            "tile_value": value,
-            "at_risk": at_risk,
+            "properties": {"row_id": i, "value_field": value_field, "tile_value": value, "at_risk": at_risk},
+        })
+    return results
+
+
+def classify_rows_pv(row_polygons, tile_features, ghi_w_m2, noct_c, temp_coeff_pct_per_c, max_operating_temp_c):
+    """Classify rows using the NOCT cell-temperature + power-loss model (see pv_thermal.py)."""
+    value_field = pick_value_field(tile_features[0]["properties"]) if tile_features else None
+    prepared_tiles = [(prep(shape(f["geometry"])), f["properties"]) for f in tile_features]
+
+    results = []
+    for i, row in enumerate(row_polygons):
+        tile_props = find_tile_properties(row.centroid, prepared_tiles)
+        ambient_c = tile_props.get(value_field) if (tile_props and value_field) else None
+        if ambient_c is None:
+            results.append({
+                "geometry": row,
+                "properties": {"row_id": i, "ambient_temperature_c": None, "ghi_w_m2": ghi_w_m2,
+                               "cell_temperature_c": None, "power_loss_percent": None, "at_risk": False},
+            })
+            continue
+        cell_c = pv_thermal.cell_temperature(ambient_c, ghi_w_m2, noct_c)
+        loss_pct = pv_thermal.power_loss_percent(cell_c, temp_coeff_pct_per_c)
+        results.append({
+            "geometry": row,
+            "properties": {
+                "row_id": i,
+                "ambient_temperature_c": ambient_c,
+                "ghi_w_m2": ghi_w_m2,
+                "cell_temperature_c": cell_c,
+                "power_loss_percent": loss_pct,
+                "at_risk": cell_c >= max_operating_temp_c,
+            },
         })
     return results
 
 
 def results_to_geojson(results):
-    features = []
-    for r in results:
-        features.append({
-            "type": "Feature",
-            "properties": {
-                "row_id": r["row_id"],
-                "value_field": r["value_field"],
-                "tile_value": r["tile_value"],
-                "at_risk": r["at_risk"],
-            },
-            "geometry": mapping(r["geometry"]),
-        })
+    features = [{"type": "Feature", "properties": r["properties"], "geometry": mapping(r["geometry"])} for r in results]
     return {"type": "FeatureCollection", "features": features}
 
 
@@ -103,6 +124,11 @@ def main():
     parser.add_argument("--analytic-type", default="tcm", choices=["tcm", "time_of_measure", "exceedance", "persistence"])
     parser.add_argument("--threshold", type=float, default=40.0, help="Risk cutoff, compared to the tile's analytic value (deg C for tcm, hours for exceedance/persistence)")
     parser.add_argument("--direction", default="above", choices=["above", "below"], help="Only used by exceedance/persistence")
+    parser.add_argument("--pv-model", action=argparse.BooleanOptionalAction, default=True,
+                         help="Use the NOCT cell-temperature + power-loss model (needs analytic-type=tcm; 1 extra FortyGuard request for irradiance)")
+    parser.add_argument("--noct", type=float, default=pv_thermal.NOCT_DEFAULT_C, help="Module NOCT spec, deg C (typical default, not this site's real spec)")
+    parser.add_argument("--temp-coeff", type=float, default=pv_thermal.TEMP_COEFF_DEFAULT_PCT_PER_C, help="Module temperature coefficient, %%/C (typical default)")
+    parser.add_argument("--max-operating-temp", type=float, default=pv_thermal.MAX_OPERATING_TEMP_DEFAULT_C, help="Cell temperature (deg C) at/above which a row is flagged at-risk")
     parser.add_argument("--row-pitch", type=float, default=6.0)
     parser.add_argument("--row-width", type=float, default=2.5)
     parser.add_argument("--row-orientation", type=float, default=0.0)
@@ -147,17 +173,41 @@ def main():
     rows = generate_rows(site_polygon, args.row_pitch, args.row_width, args.row_orientation)
     print(f"generated {len(rows)} panel-row segments")
 
-    # For exceedance/persistence, FortyGuard's threshold param already picked
-    # out hours above/below args.threshold -- here we just report rows with
-    # any non-zero exceedance/persistence hours as "at risk" (strictly > 0,
-    # not >=, since 0 hours means "never happened" not "at risk").
-    results = classify_rows(
-        rows, tile_features,
-        threshold=0.0 if is_thresholded_analytic else args.threshold,
-        strict_greater=is_thresholded_analytic,
-    )
-    at_risk_count = sum(1 for r in results if r["at_risk"])
-    print(f"{at_risk_count}/{len(results)} rows flagged at risk")
+    use_pv_model = args.pv_model and args.analytic_type == "tcm"
+    if args.pv_model and args.analytic_type != "tcm":
+        print("--pv-model needs actual temperature values, only available with --analytic-type tcm; skipping.", file=sys.stderr)
+
+    if use_pv_model:
+        value_field = pick_value_field(tile_features[0]["properties"])
+        temps = [f["properties"][value_field] for f in tile_features if f["properties"].get(value_field) is not None]
+        representative_ambient_c = sum(temps) / len(temps)
+        centroid = site_polygon.centroid
+
+        print(f"submitting env_params request for irradiance (ambient={representative_ambient_c:.2f} C)...")
+        env_activity_id = client.submit_env_params(
+            latitude=centroid.y, longitude=centroid.x, temperature=representative_ambient_c,
+            date_time=date_time, analysis=["solar_irradiance"],
+        )
+        env_result = client.poll_until_complete(env_activity_id, interval_seconds=5, timeout_seconds=180)
+        ghi_values = [loc["solar_irradiance"]["clear_sky"]["ghi"] for loc in env_result["locations"]]
+        ghi_w_m2 = sum(ghi_values) / len(ghi_values)
+        print(f"GHI={ghi_w_m2:.1f} W/m^2")
+
+        results = classify_rows_pv(rows, tile_features, ghi_w_m2, args.noct, args.temp_coeff, args.max_operating_temp)
+        at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
+        print(f"{at_risk_count}/{len(results)} rows at or above {args.max_operating_temp} C cell temperature")
+    else:
+        # For exceedance/persistence, FortyGuard's threshold param already
+        # picked out hours above/below args.threshold -- here we just report
+        # rows with any non-zero hours as "at risk" (strictly > 0, not >=,
+        # since 0 hours means "never happened" not "at risk").
+        results = classify_rows(
+            rows, tile_features,
+            threshold=0.0 if is_thresholded_analytic else args.threshold,
+            strict_greater=is_thresholded_analytic,
+        )
+        at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
+        print(f"{at_risk_count}/{len(results)} rows flagged at risk")
 
     out_path = Path(args.output) if args.output else site_path.with_name(site_path.stem + "_heat_risk.geojson")
     out_path.write_text(json.dumps(results_to_geojson(results), indent=2))
