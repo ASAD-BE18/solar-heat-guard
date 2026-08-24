@@ -97,8 +97,17 @@ document.getElementById("overlay-toggle").addEventListener("change", e => {
 });
 
 const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
-document.getElementById("stats").textContent =
-  `${atRiskCount} / ${PANEL_ROWS.features.length} rows at risk`;
+let statsHtml = `${atRiskCount} / ${PANEL_ROWS.features.length} rows at risk`;
+if (pvModel) {
+  const losses = PANEL_ROWS.features.map(f => f.properties.power_loss_percent).filter(v => v != null);
+  const temps = PANEL_ROWS.features.map(f => f.properties.cell_temperature_c).filter(v => v != null);
+  const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+  if (losses.length) {
+    statsHtml += `<br><b>Avg cell temp:</b> ${avg(temps).toFixed(1)}&deg;C`;
+    statsHtml += `<br><b>Avg power loss:</b> ${avg(losses).toFixed(1)}%`;
+  }
+}
+document.getElementById("stats").innerHTML = statsHtml;
 
 const md = PANEL_ROWS.metadata;
 if (md) {

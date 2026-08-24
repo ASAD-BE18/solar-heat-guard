@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .venv/
 .claude/
+data/fortyguard/_tile_cache/

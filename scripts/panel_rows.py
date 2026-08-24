@@ -2,10 +2,12 @@
 
 FortyGuard's segmentation model has no "solar panel" class (confirmed), so we
 approximate row geometry ourselves: parallel strips at a configurable pitch/
-width/orientation, clipped to the site polygon. Defaults (6 m pitch, 2.5 m
-width, north-south orientation) are a rough single-axis-tracker assumption
-based on the visible row pattern in satellite imagery, not a surveyed layout
--- override them with real spacing if you have it.
+width/orientation, clipped to the site polygon. Defaults (5.38 m pitch,
+2.82 m width, north-south orientation) come from measure_row_geometry.py's
+column-brightness-profile analysis of real satellite imagery over this site
+-- still a site-wide average, not a per-row survey, but grounded in the
+actual imagery rather than eyeballed. Override them with real spacing if you
+have a surveyed layout.
 """
 import argparse
 import json
@@ -73,8 +75,8 @@ def rows_to_geojson(rows):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("site_geojson", help="Path to a GeoJSON FeatureCollection with the site polygon")
-    parser.add_argument("--pitch", type=float, default=6.0, help="Row center-to-center spacing in meters")
-    parser.add_argument("--width", type=float, default=2.5, help="Row width in meters")
+    parser.add_argument("--pitch", type=float, default=5.38, help="Row center-to-center spacing in meters")
+    parser.add_argument("--width", type=float, default=2.82, help="Row width in meters")
     parser.add_argument("--orientation", type=float, default=0.0, help="Row bearing in degrees, 0 = north-south")
     parser.add_argument("-o", "--output", default=None, help="Output GeoJSON path")
     args = parser.parse_args()

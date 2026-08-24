@@ -22,7 +22,11 @@ flowchart TD
     KML["data/kml/*.kml<br/>Google Earth boundary export"] --> K2G["kml_to_geojson.py"]
     K2G --> SITE["data/geojson/*.geojson<br/>site boundary"]
 
-    SITE --> PR["panel_rows.py<br/>approximate panel-row geometry"]
+    SITE --> SAT["satellite_tiles.py<br/>fetch Esri imagery mosaic"]
+    SAT --> MEASURE["measure_row_geometry.py<br/>column-brightness profile -> pitch/width"]
+    MEASURE --> PR["panel_rows.py<br/>generate row geometry from measured pitch/width"]
+
+    SITE --> PR
     SITE --> HM["FortyGuard API<br/>POST /v1/heatmap (analytic_type=tcm)"]
     SITE --> EP["FortyGuard API<br/>POST /v1/env_params (solar_irradiance)"]
 
@@ -44,8 +48,11 @@ flowchart TD
    converted to GeoJSON (`kml_to_geojson.py`).
 2. **Panel rows** -- FortyGuard's satellite segmentation has no "solar panel"
    class, so individual rows are approximated ourselves: parallel strips at
-   a configurable pitch/width/orientation, clipped to the site boundary
-   (`panel_rows.py`).
+   a configurable pitch/width, clipped to the site boundary (`panel_rows.py`).
+   Pitch/width come from `measure_row_geometry.py`, which fetches an Esri
+   satellite mosaic (`satellite_tiles.py`) and measures the real row spacing
+   from a column-brightness profile (see "How panel-row geometry was
+   measured" below) -- not eyeballed from a screenshot.
 3. **Heatmap** -- one request to FortyGuard's `Create Heatmap` endpoint
    returns a grid of ambient/land-surface temperature tiles across the whole
    site (`tcm`), or hours-above-threshold (`exceedance`/`persistence`).
@@ -103,6 +110,13 @@ dates (e.g. "yesterday") can return zero tiles even though the request
 succeeds. `2024-07-15` is confirmed to return real data; prefer dates that
 are safely in the past over "today"/"yesterday".
 
+**Real result on `2024-07-15` at 14:00:** ambient ~35.5°C + GHI ~864 W/m² ->
+modeled cell temperature ~61.4°C -> ~13.8% estimated power loss site-wide.
+That's a real, concrete "heat is costing you ~14% output right now" number
+-- but well below the 85°C absolute max-operating-temp cutoff, so the binary
+`at_risk` flag reads 0/152 for this particular hour. The model's headline
+value here is the % power loss number, not necessarily the risk flag.
+
 **Picking `--threshold`:** on `2024-07-15` this site's ambient temperature
 (`tcm`) peaked around 35.5°C at 14:00, and an `exceedance` check for 40°C
 across 06:00-18:00 came back with 0 hours for every row -- a real result,
@@ -110,11 +124,33 @@ not a bug, but it means 40°C is too high a bar to show any risk on that
 particular day. A threshold closer to the site's actual peak (e.g. 34-35°C)
 will show more differentiation for a demo.
 
+## How panel-row geometry was measured
+
+A first attempt tried per-pixel color segmentation (Otsu threshold + connected
+components) directly on satellite tiles to vectorize individual row polygons.
+That was too noisy to trust: at the zoom level needed (19), row width (~10px)
+is close to the imagery's JPEG compression block size, so per-pixel
+classification mostly picked up small bright artifacts, not clean rows.
+
+`measure_row_geometry.py` instead averages pixel brightness column-wise
+across the whole site (thousands of pixels per column) with
+`satellite_tiles.py`'s Esri mosaic fetcher. That averaging cancels out the
+per-pixel noise and leaves a clean periodic signal -- one dip per row -- from
+which it measures the dominant spatial period (autocorrelation) for pitch,
+and the fraction of each period reading darker than its mean (phase-folding)
+for width. For this site: **pitch 5.38 m, width 2.82 m**, replacing the
+originally eyeballed 6 m / 2.5 m. Orientation (north-south) is 0 deg by
+construction of the north-up mosaic, not something this script re-derives.
+
+This is still a site-wide average, not a per-row survey -- real row lines can
+still drift from these numbers locally. Re-run it if the boundary or site
+changes: `python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojson`.
+
 ## Known limitations (be upfront about these in the demo)
 
-- **Panel rows are approximated, not surveyed.** Default pitch/width/
-  orientation (6 m / 2.5 m / north-south) come from eyeballing the row
-  pattern in satellite imagery, not a real site layout.
+- **Panel rows are a measured average, not a per-row survey.** See above --
+  pitch/width are measured from real imagery, but individual rows can still
+  deviate from that average locally.
 - **PV model constants are typical values, not this site's real spec.**
   NOCT (44°C), temperature coefficient (-0.38%/°C), and the max operating
   temperature cutoff (85°C) are standard utility-scale c-Si module figures,
@@ -140,6 +176,8 @@ docs/                 Leaflet visualization, published via GitHub Pages
 scripts/
   kml_to_geojson.py   KML -> GeoJSON boundary conversion
   geo_utils.py        Local lon/lat <-> meters projection (site-scale accuracy)
+  satellite_tiles.py  Esri World Imagery tile fetch/stitch + pixel<->lonlat math
+  measure_row_geometry.py  Measures real row pitch/width from a satellite mosaic
   panel_rows.py       Approximate panel-row geometry generator
   fortyguard_client.py FortyGuard API client (heatmap, env_params, status polling)
   pv_thermal.py       NOCT cell-temperature + power-loss model
