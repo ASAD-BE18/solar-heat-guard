@@ -17,12 +17,17 @@
   #panel .legend-item { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
   #panel .swatch { width: 14px; height: 14px; border-radius: 2px; flex: none; }
   #panel .stat { margin-top: 8px; color: #333; }
+  #panel .toggle-row { display: flex; align-items: center; gap: 6px; margin: 8px 0 2px; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div id="panel">
   <h1>solar-heat-guard</h1>
+  <div class="toggle-row">
+    <input type="checkbox" id="overlay-toggle" checked>
+    <label for="overlay-toggle">Show risk overlay</label>
+  </div>
   <div id="meta" class="stat"></div>
   <div id="legend"></div>
   <div id="stats" class="stat"></div>
@@ -82,6 +87,14 @@ const rowsLayer = L.geoJSON(PANEL_ROWS, {
 }).addTo(map);
 
 map.fitBounds(rowsLayer.getBounds());
+
+document.getElementById("overlay-toggle").addEventListener("change", e => {
+  if (e.target.checked) {
+    rowsLayer.addTo(map);
+  } else {
+    map.removeLayer(rowsLayer);
+  }
+});
 
 const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
 document.getElementById("stats").textContent =
