@@ -51,8 +51,8 @@ function rowColor(props, pvModel) {
 }
 
 const map = L.map("map");
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+  attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
   maxZoom: 20,
 }).addTo(map);
 
@@ -63,7 +63,7 @@ L.geoJSON(SITE_BOUNDARY, {
 const pvModel = hasPvModel(PANEL_ROWS.features);
 
 const rowsLayer = L.geoJSON(PANEL_ROWS, {
-  style: f => ({ color: rowColor(f.properties, pvModel), weight: 1, fillOpacity: 0.85 }),
+  style: f => ({ color: rowColor(f.properties, pvModel), weight: 1, fillColor: rowColor(f.properties, pvModel), fillOpacity: 0.55 }),
   onEachFeature: (f, layer) => {
     const p = f.properties;
     let html = `<b>Row ${p.row_id}</b><br>`;
