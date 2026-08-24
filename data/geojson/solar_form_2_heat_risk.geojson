@@ -5,7 +5,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 0,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -36,8 +37,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 1,
-        "tile_temperature_c": 35.5687,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -71,8 +73,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 2,
-        "tile_temperature_c": 35.5643,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -106,8 +109,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 3,
-        "tile_temperature_c": 35.5564,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -141,8 +145,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 4,
-        "tile_temperature_c": 35.5451,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -176,8 +181,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 5,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -211,8 +217,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 6,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -246,8 +253,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 7,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -281,8 +289,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 8,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -316,8 +325,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 9,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -351,8 +361,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 10,
-        "tile_temperature_c": 35.5311,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -386,8 +397,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 11,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -421,8 +433,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 12,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -456,8 +469,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 13,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -491,8 +505,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 14,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -526,8 +541,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 15,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -561,8 +577,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 16,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -596,8 +613,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 17,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -631,8 +649,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 18,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -666,8 +685,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 19,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -701,8 +721,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 20,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -736,8 +757,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 21,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -771,8 +793,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 22,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -806,8 +829,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 23,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -841,8 +865,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 24,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -876,8 +901,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 25,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -911,8 +937,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 26,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -946,8 +973,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 27,
-        "tile_temperature_c": 35.5309,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -981,8 +1009,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 28,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1016,8 +1045,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 29,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1051,8 +1081,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 30,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1086,8 +1117,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 31,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1121,8 +1153,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 32,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1156,8 +1189,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 33,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1191,8 +1225,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 34,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1226,8 +1261,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 35,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1261,8 +1297,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 36,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1296,8 +1333,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 37,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1331,8 +1369,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 38,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1366,8 +1405,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 39,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1401,8 +1441,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 40,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1436,8 +1477,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 41,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1471,8 +1513,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 42,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1506,8 +1549,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 43,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1541,8 +1585,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 44,
-        "tile_temperature_c": 35.5306,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1576,8 +1621,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 45,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1611,8 +1657,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 46,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1646,8 +1693,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 47,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1681,8 +1729,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 48,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1716,8 +1765,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 49,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1751,8 +1801,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 50,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1786,8 +1837,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 51,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1821,8 +1873,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 52,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1856,8 +1909,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 53,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1891,8 +1945,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 54,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1926,8 +1981,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 55,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -1965,8 +2021,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 56,
-        "tile_temperature_c": 35.5148,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2000,8 +2057,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 57,
-        "tile_temperature_c": 35.5148,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2035,8 +2093,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 58,
-        "tile_temperature_c": 35.5148,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2070,8 +2129,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 59,
-        "tile_temperature_c": 35.5148,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2113,8 +2173,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 60,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2148,8 +2209,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 61,
-        "tile_temperature_c": 35.5304,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2183,8 +2245,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 62,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2218,8 +2281,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 63,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2253,8 +2317,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 64,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2288,8 +2353,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 65,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2323,8 +2389,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 66,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2358,8 +2425,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 67,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2393,8 +2461,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 68,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2428,8 +2497,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 69,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2463,8 +2533,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 70,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2498,8 +2569,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 71,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2533,8 +2605,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 72,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2568,8 +2641,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 73,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2603,8 +2677,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 74,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2638,8 +2713,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 75,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2673,8 +2749,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 76,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2708,8 +2785,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 77,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2743,8 +2821,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 78,
-        "tile_temperature_c": 35.5302,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2778,8 +2857,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 79,
-        "tile_temperature_c": 35.5299,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2813,8 +2893,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 80,
-        "tile_temperature_c": 35.5299,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2848,8 +2929,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 81,
-        "tile_temperature_c": 35.5299,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2883,8 +2965,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 82,
-        "tile_temperature_c": 35.5299,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2918,8 +3001,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 83,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2953,8 +3037,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 84,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -2988,8 +3073,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 85,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3023,8 +3109,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 86,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3058,8 +3145,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 87,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3093,8 +3181,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 88,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3128,8 +3217,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 89,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3163,8 +3253,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 90,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3198,8 +3289,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 91,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3233,8 +3325,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 92,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3268,8 +3361,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 93,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3303,8 +3397,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 94,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3338,8 +3433,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 95,
-        "tile_temperature_c": 35.544,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3373,8 +3469,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 96,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3408,8 +3505,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 97,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3443,8 +3541,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 98,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3478,8 +3577,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 99,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3513,8 +3613,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 100,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3548,8 +3649,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 101,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3583,8 +3685,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 102,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3618,8 +3721,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 103,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3653,8 +3757,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 104,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3688,8 +3793,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 105,
-        "tile_temperature_c": 35.5701,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3719,8 +3825,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 106,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3754,8 +3861,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 107,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3789,8 +3897,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 108,
-        "tile_temperature_c": 35.5438,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3824,8 +3933,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 109,
-        "tile_temperature_c": 35.5555,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3859,8 +3969,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 110,
-        "tile_temperature_c": 35.5555,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3894,8 +4005,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 111,
-        "tile_temperature_c": 35.5555,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3929,8 +4041,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 112,
-        "tile_temperature_c": 35.5555,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3964,8 +4077,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 113,
-        "tile_temperature_c": 35.5555,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -3999,8 +4113,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 114,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4034,8 +4149,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 115,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4069,8 +4185,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 116,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4104,8 +4221,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 117,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4139,8 +4257,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 118,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4174,8 +4293,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 119,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4209,8 +4329,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 120,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4244,8 +4365,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 121,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4279,8 +4401,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 122,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4314,8 +4437,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 123,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4349,8 +4473,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 124,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4384,8 +4509,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 125,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4419,8 +4545,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 126,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4454,8 +4581,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 127,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4489,8 +4617,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 128,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4524,8 +4653,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 129,
-        "tile_temperature_c": 35.5553,
-        "at_risk": true
+        "value_field": "value",
+        "tile_value": 0.0,
+        "at_risk": false
       },
       "geometry": {
         "type": "Polygon",
@@ -4559,7 +4689,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 130,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -4594,7 +4725,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 131,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -4629,7 +4761,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 132,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -4664,7 +4797,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 133,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -4699,7 +4833,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 134,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -4734,7 +4869,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 135,
-        "tile_temperature_c": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
