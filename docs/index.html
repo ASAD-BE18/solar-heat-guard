@@ -23,6 +23,7 @@
 <div id="map"></div>
 <div id="panel">
   <h1>solar-heat-guard</h1>
+  <div id="meta" class="stat"></div>
   <div id="legend"></div>
   <div id="stats" class="stat"></div>
 </div>
@@ -85,6 +86,31 @@ map.fitBounds(rowsLayer.getBounds());
 const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
 document.getElementById("stats").textContent =
   `${atRiskCount} / ${PANEL_ROWS.features.length} rows at risk`;
+
+const md = PANEL_ROWS.metadata;
+if (md) {
+  const timeWindow = md.end_time ? `${md.start_time}–${md.end_time}` : md.start_time;
+  let lines = [
+    `<b>Date:</b> ${md.date} ${timeWindow}`,
+    `<b>Analysis:</b> ${md.analytic_type}${md.direction ? " (" + md.direction + ")" : ""}`,
+    `<b>Granularity:</b> ${md.granularity_m} m`,
+  ];
+  if (md.pv_model) {
+    lines.push(`<b>PV model:</b> NOCT=${md.noct_c}&deg;C, coeff=${md.temp_coeff_pct_per_c}%/&deg;C`);
+    lines.push(`<b>Risk cutoff:</b> cell temp ≥ ${md.max_operating_temp_c}&deg;C`);
+  } else if (md.analytic_type === "tcm") {
+    lines.push(`<b>Risk cutoff:</b> ${md.threshold}&deg;C`);
+  } else {
+    if (md.temperature_threshold_c != null) {
+      lines.push(`<b>Metric:</b> hours above ${md.temperature_threshold_c}&deg;C`);
+    }
+    lines.push(`<b>Risk cutoff:</b> &ge; ${md.threshold} hrs`);
+  }
+  lines.push(`<b>Row geometry:</b> ${md.row_pitch_m}m pitch, ${md.row_width_m}m width (approximated)`);
+  document.getElementById("meta").innerHTML = lines.join("<br>");
+} else {
+  document.getElementById("meta").textContent = "(no run metadata in this dataset)";
+}
 
 const legend = document.getElementById("legend");
 if (pvModel) {

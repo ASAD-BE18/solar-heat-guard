@@ -109,9 +109,12 @@ def classify_rows_pv(row_polygons, tile_features, ghi_w_m2, noct_c, temp_coeff_p
     return results
 
 
-def results_to_geojson(results):
+def results_to_geojson(results, metadata=None):
     features = [{"type": "Feature", "properties": r["properties"], "geometry": mapping(r["geometry"])} for r in results]
-    return {"type": "FeatureCollection", "features": features}
+    fc = {"type": "FeatureCollection", "features": features}
+    if metadata is not None:
+        fc["metadata"] = metadata
+    return fc
 
 
 def main():
@@ -209,8 +212,27 @@ def main():
         at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
         print(f"{at_risk_count}/{len(results)} rows flagged at risk")
 
+    metadata = {
+        "date": args.date,
+        "start_time": args.start_time,
+        "end_time": args.end_time,
+        "granularity_m": args.granularity,
+        "analytic_type": args.analytic_type,
+        "threshold": args.threshold,
+        "direction": args.direction if is_thresholded_analytic else None,
+        "pv_model": use_pv_model,
+        "noct_c": args.noct if use_pv_model else None,
+        "temp_coeff_pct_per_c": args.temp_coeff if use_pv_model else None,
+        "max_operating_temp_c": args.max_operating_temp if use_pv_model else None,
+        "row_pitch_m": args.row_pitch,
+        "row_width_m": args.row_width,
+        "row_orientation_deg": args.row_orientation,
+        "n_rows": len(results),
+        "n_at_risk": at_risk_count,
+    }
+
     out_path = Path(args.output) if args.output else site_path.with_name(site_path.stem + "_heat_risk.geojson")
-    out_path.write_text(json.dumps(results_to_geojson(results), indent=2))
+    out_path.write_text(json.dumps(results_to_geojson(results, metadata), indent=2))
     print(f"wrote {out_path}")
 
 

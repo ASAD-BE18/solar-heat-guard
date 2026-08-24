@@ -4901,5 +4901,21 @@
         ]
       }
     }
-  ]
+  ],
+  "metadata": {
+    "date": "2024-07-15",
+    "start_time": "06:00",
+    "end_time": "18:00",
+    "granularity_m": 100,
+    "analytic_type": "exceedance",
+    "temperature_threshold_c": 35.0,
+    "threshold": 3.9,
+    "direction": "above",
+    "pv_model": false,
+    "row_pitch_m": 6.0,
+    "row_width_m": 2.5,
+    "row_orientation_deg": 0.0,
+    "n_rows": 136,
+    "n_at_risk": 25
+  }
 }
