@@ -17,6 +17,12 @@ clean periodic signal -- one dip per row. From that signal it measures:
   - row width: the fraction of each period that reads darker than the
     period's mean (the row itself vs. the bare-soil gap), via phase-folding
     the profile over one measured period.
+  - row phase (offset): where in that period the dark part actually sits,
+    as a circular mean of the folded cycle weighted by darkness. Without
+    this, pitch and width are correct but the generated strip grid is
+    anchored to an arbitrary origin, so every strip can straddle a real row
+    and a gap. Reported in metres along the across-row axis, in the same
+    local frame panel_rows.py generates geometry in.
   - row orientation: rows appear as vertical lines in this north-up Web
     Mercator mosaic, so orientation is 0 deg (north-south) by construction;
     this script doesn't re-derive it, it's a property of how the tiles are
@@ -36,6 +42,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import satellite_tiles as st
+from geo_utils import make_projector
 from satellite_tiles import rasterize_polygon_mask
 
 METERS_PER_PIXEL_AT_EQUATOR_Z0 = 156543.03392
@@ -74,20 +81,56 @@ def estimate_pitch_px(detrended, edge_trim=150, light_smooth=3, min_lag=5, max_l
     return best_lag, best_val
 
 
-def estimate_width_fraction(detrended, pitch_px, sample_slice):
-    """Phase-folds the profile over one period to get an average cycle
-    shape, then measures what fraction of it reads darker than the cycle
-    mean. Bins 1:1 with pixels (pitch_px is already an integer pixel count)
-    -- using more bins than that leaves most of them empty/nan, since
-    i % pitch_px only ever takes pitch_px distinct integer values."""
+def fold_cycle(detrended, pitch_px, sample_slice):
+    """Phase-folds the profile over one period to get an average cycle shape.
+    Bins 1:1 with pixels (pitch_px is already an integer pixel count) -- using
+    more bins than that leaves most of them empty/nan, since i % pitch_px only
+    ever takes pitch_px distinct integer values.
+
+    Bin b corresponds to mosaic pixel columns congruent to
+    (sample_slice.start + b) modulo pitch_px."""
     seg = detrended[sample_slice]
     acc, cnt = np.zeros(pitch_px), np.zeros(pitch_px)
     for i, v in enumerate(seg):
         b = i % pitch_px
         acc[b] += v
         cnt[b] += 1
-    avg_cycle = acc / cnt
+    return acc / cnt
+
+
+def width_fraction(avg_cycle):
+    """Fraction of the cycle reading darker than the cycle mean -- the row
+    itself, as opposed to the bare-soil gap between rows."""
     return float(np.mean(avg_cycle < 0))
+
+
+def dark_centre_bin(avg_cycle, width_bins):
+    """Bin at the centre of the dark (panel) part of the cycle.
+
+    Slides a circular boxcar the width of the measured row footprint over the
+    folded cycle and takes the position capturing the most darkness -- i.e.
+    "where would a row of this width have to sit to explain the dip?", which
+    is exactly what panel_rows.py needs. A darkness-weighted centroid was
+    tried first and sat ~8% of a pitch off a brute-force sweep, because the
+    bright gap's tails drag the centroid; this estimator is not sensitive to
+    them. Circular so a dark run wrapping the end of the array still resolves.
+    """
+    n = len(avg_cycle)
+    width_bins = max(1, min(n, int(round(width_bins))))
+    doubled = np.concatenate([avg_cycle, avg_cycle])
+    sums = [doubled[start:start + width_bins].sum() for start in range(n)]
+    start = int(np.argmin(sums))
+    return float((start + (width_bins - 1) / 2.0) % n)
+
+
+def phase_offset_m(centre_px, site, tile_x0, tile_y0, zoom, pitch_m):
+    """Convert a mosaic pixel column that sits at a row centre into an offset
+    in panel_rows.py's local metre frame (origin = site centroid), reduced
+    modulo the pitch since only the phase matters."""
+    lon, _ = st.pixel_to_lonlat(centre_px, 0, tile_x0, tile_y0, zoom)
+    to_local, _ = make_projector(site.centroid.x, site.centroid.y)
+    x_local, _ = to_local(lon, site.centroid.y)
+    return float(x_local % pitch_m)
 
 
 def main():
@@ -117,21 +160,29 @@ def main():
         print("ERROR: no clear periodic signal found -- imagery may not show a regular row pattern here.", file=sys.stderr)
         sys.exit(1)
 
-    width_fraction = estimate_width_fraction(detrended, pitch_px, slice(args.sample_start, args.sample_end))
+    sample = slice(args.sample_start, args.sample_end)
+    avg_cycle = fold_cycle(detrended, pitch_px, sample)
+    frac = width_fraction(avg_cycle)
+    centre_bin = dark_centre_bin(avg_cycle, frac * pitch_px)
 
     mpp = meters_per_pixel(site.centroid.y, zoom)
     pitch_m = pitch_px * mpp
-    width_m = width_fraction * pitch_px * mpp
+    width_m = frac * pitch_px * mpp
+    offset_m = phase_offset_m(args.sample_start + centre_bin, site,
+                              tile_x0, tile_y0, zoom, pitch_m)
 
     print(f"pitch: {pitch_px} px ({pitch_m:.2f} m), autocorrelation={confidence:.3f}")
-    print(f"width: {width_fraction:.2f} of cycle ({width_m:.2f} m)")
+    print(f"width: {frac:.2f} of cycle ({width_m:.2f} m)")
+    print(f"offset: dark centre at bin {centre_bin:.2f}/{pitch_px} -> {offset_m:.2f} m")
     print("orientation: 0 deg (north-south, by construction of the north-up mosaic)")
 
     result = {
         "pitch_m": round(pitch_m, 2),
         "width_m": round(width_m, 2),
+        "offset_m": round(offset_m, 2),
         "orientation_deg": 0.0,
         "pitch_px": pitch_px,
+        "dark_centre_bin": round(centre_bin, 2),
         "autocorrelation": round(float(confidence), 4),
         "zoom": zoom,
         "meters_per_pixel": round(mpp, 4),

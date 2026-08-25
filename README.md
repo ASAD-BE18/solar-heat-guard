@@ -36,8 +36,8 @@ flowchart TD
     K2G --> SITE["data/geojson/*.geojson<br/>site boundary"]
 
     SITE --> SAT["satellite_tiles.py<br/>fetch Esri imagery mosaic"]
-    SAT --> MEASURE["measure_row_geometry.py<br/>column-brightness profile -> pitch/width"]
-    MEASURE --> PR["panel_rows.py<br/>generate row geometry from measured pitch/width"]
+    SAT --> MEASURE["measure_row_geometry.py<br/>column-brightness profile -> pitch/width/phase"]
+    MEASURE --> PR["panel_rows.py<br/>generate row geometry on the measured pitch/width/phase lattice"]
 
     SITE --> PR
     SITE --> HM["FortyGuard API<br/>POST /v1/heatmap (analytic_type=exceedance)"]
@@ -47,9 +47,9 @@ flowchart TD
     PR --> OVERLAY["heat_risk.py<br/>match each row to its tile"]
     TILES --> OVERLAY
 
-    OVERLAY --> PCTL["percentile cutoff over<br/>row-covered tiles only (top quartile)"]
+    OVERLAY --> PCTL["percentile cutoff over<br/>scored rows (top quartile)"]
 
-    PCTL --> RISK["*_heat_risk.geojson<br/>per row: exceedance-hours, at_risk"]
+    PCTL --> RISK["*_heat_risk.geojson<br/>per row: tile_id, exceedance-hours,<br/>at_risk = true/false/null"]
     RISK --> VIZ["docs/index.html<br/>Leaflet map"]
     VIZ --> PAGES["GitHub Pages"]
 ```
@@ -58,23 +58,27 @@ flowchart TD
    converted to GeoJSON (`kml_to_geojson.py`).
 2. **Panel rows** -- FortyGuard's satellite segmentation has no "solar panel"
    class, so individual rows are approximated ourselves: parallel strips at
-   a configurable pitch/width, clipped to the site boundary (`panel_rows.py`).
-   Pitch/width come from `measure_row_geometry.py`, which fetches an Esri
-   satellite mosaic (`satellite_tiles.py`) and measures the real row spacing
-   from a column-brightness profile (see "How panel-row geometry was
-   measured" below) -- not eyeballed from a screenshot.
+   a configurable pitch/width/phase, clipped to the site boundary
+   (`panel_rows.py`). All three come from `measure_row_geometry.py`, which
+   fetches an Esri satellite mosaic (`satellite_tiles.py`) and measures the
+   real row spacing *and where the rows actually sit* from a column-brightness
+   profile (see "How panel-row geometry was measured" below) -- not eyeballed
+   from a screenshot.
 3. **Heatmap** -- one request to FortyGuard's `Create Heatmap` endpoint,
    `analytic_type=exceedance`, with `--threshold` set to the site's own
    measured average temperature -- turning "hours above threshold" into
    "hours running hotter than this site's own typical temperature."
 4. **Site-relative hotspot cutoff** -- rather than any fixed absolute number,
-   a row is flagged when its tile's exceedance-hours sit in the top
-   `--risk-percentile` (default 75th) of tiles that actually contain panel
-   rows -- not all of this site's tiles, since edge/gap tiles with no rows
-   in them would skew the cutoff.
+   a row is flagged when its exceedance-hours sit in the top
+   `--risk-percentile` (default 75th) of **the site's own scored rows**. The
+   percentile is row-weighted, not tile-weighted: the deliverable is a ranked
+   inspection list of rows, and the two weightings give materially different
+   cutoffs (see "Resolution" below). Rows with no covering tile are excluded
+   from the percentile entirely.
 5. **Output + visualization** -- rows are written to `*_heat_risk.geojson`
-   with an `at_risk` flag, rendered on a Leaflet map (`docs/index.html`)
-   published via GitHub Pages.
+   with a `tile_id` and a three-state `at_risk` flag (`true` / `false` /
+   `null` for "no covering tile"), rendered on a Leaflet map
+   (`docs/index.html`) published via GitHub Pages.
 
 An alternative mode (`--pv-model`, needs `--analytic-type tcm`) estimates
 actual panel cell temperature and % power loss via a NOCT thermal model
@@ -91,6 +95,13 @@ python -m venv .venv
 
 cp .env.example .env
 # fill in FORTYGUARD_API_KEY
+```
+
+Dependencies are pinned. For the test suite:
+
+```bash
+./.venv/Scripts/pip install -r requirements-dev.txt
+./.venv/Scripts/python -m pytest tests/ -q     # 39 tests, fully offline
 ```
 
 ## Usage
@@ -114,11 +125,24 @@ python scripts/heat_risk.py data/geojson/solar_form_2.geojson \
 The default hotspot mode costs 1 FortyGuard request; `--pv-model` costs 2
 (heatmap + irradiance). Either way it writes
 `data/geojson/<site>_heat_risk.geojson` -- a FeatureCollection of panel-row
-polygons tagged with an `at_risk` flag (plus `cell_temperature_c` and
-`power_loss_percent` for the PV model). Load it into any GeoJSON-aware map
-viewer (geojson.io, kepler.gl, QGIS, Leaflet), or open `docs/index.html` /
-the [GitHub Pages demo](https://asad-be18.github.io/solar-heat-guard/) to see
-it spatially.
+polygons, each tagged with the `tile_id` it was scored from and a three-state
+`at_risk` flag (plus `cell_temperature_c` and `power_loss_percent` for the PV
+model). Load it into any GeoJSON-aware map viewer (geojson.io, kepler.gl,
+QGIS, Leaflet), or open `docs/index.html` / the
+[GitHub Pages demo](https://asad-be18.github.io/solar-heat-guard/) to see it
+spatially.
+
+**`at_risk` is three-state, on purpose.** `true` = flagged, `false` = measured
+and cleared, `null` = no heatmap tile covers this row, so it is *unknown* --
+never folded in with the cleared rows. Summary counts use a scored-rows
+denominator, so rows that could not be evaluated cannot dilute the at-risk
+rate. The map paints unknown rows grey with their own legend entry.
+
+**Completed API results are cached** under `data/fortyguard/_response_cache/`,
+keyed by request payload, so re-running the pipeline with the same parameters
+costs no quota -- useful when iterating on row geometry, the percentile, or
+the visualization. Pass `--no-cache` to force a live request. The API key is
+never part of the cache key and is never written to disk.
 
 **Picking `--date`:** FortyGuard's data has a processing lag -- very recent
 dates (e.g. "yesterday") can return zero tiles even though the request
@@ -134,17 +158,18 @@ than this site's own typical temperature." A too-high threshold (we tried
 useful for hotspot detection.
 
 **Real result on `2024-07-15`, 06:00-18:00, granularity 60m:** tile
-exceedance-hours (above 35.5°C) ranged 1.98-3.11 across 176 tiles;
-restricting to the 152 tiles that actually contain panel rows, the range was
-2.51-3.03 and the top-quartile cutoff was 2.72 hours -- **47/152 rows (31%)
-flagged as recurring hotspots.**
+exceedance-hours (above 35.5°C) ranged 1.98-3.11 across 176 tiles. Of the 151
+generated rows, 146 fell inside a returned tile, spread over 21 distinct tiles;
+across those scored rows the values ranged 2.51-3.11 and the row-weighted
+top-quartile cutoff was 2.72 hours -- **46/146 scored rows (32%) flagged as
+recurring hotspots**, with 5 rows reported as unknown (no covering tile).
 
 **Real result with `--pv-model` on `2024-07-15` at 14:00:** ambient ~35.5°C +
 GHI ~864 W/m² -> modeled cell temperature ~61.4°C -> ~13.8% estimated power
 loss site-wide -- a real, concrete "heat is costing ~14% output right now"
-number, but well below the 85°C absolute max-operating-temp cutoff (0/152
-rows flagged). The model's headline value here is the % power-loss number,
-not the risk flag.
+number, but well below the 85°C absolute max-operating-temp cutoff (0 rows
+flagged). The model's headline value here is the % power-loss number, not the
+risk flag.
 
 ## How panel-row geometry was measured
 
@@ -158,21 +183,58 @@ classification mostly picked up small bright artifacts, not clean rows.
 across the whole site (thousands of pixels per column) with
 `satellite_tiles.py`'s Esri mosaic fetcher. That averaging cancels out the
 per-pixel noise and leaves a clean periodic signal -- one dip per row -- from
-which it measures the dominant spatial period (autocorrelation) for pitch,
-and the fraction of each period reading darker than its mean (phase-folding)
-for width. For this site: **pitch 5.38 m, width 2.82 m**, replacing the
+which it measures three things:
+
+- **pitch** -- the dominant spatial period, via autocorrelation.
+- **width** -- the fraction of each period reading darker than its mean, via
+  phase-folding.
+- **phase** -- *where in that period the dark band actually sits*, by sliding
+  a circular boxcar the width of the measured row footprint over the folded
+  cycle and taking the darkest position.
+
+For this site: **pitch 5.38 m, width 2.82 m, phase 4.86 m**, replacing the
 originally eyeballed 6 m / 2.5 m. Orientation (north-south) is 0 deg by
 construction of the north-up mosaic, not something this script re-derives.
+
+The phase matters as much as the pitch. Without it the generated strip grid is
+anchored to the projection origin, which bears no relation to where the real
+rows sit -- pitch and width can both be correct while every strip straddles a
+real row and a gap, up to half a pitch (2.7 m) out. The measured 4.86 m lands
+0.09 m (1.7% of a pitch) from a brute-force sweep of the same objective.
+
+Honest caveat: on *this* site the old unphased grid happened to fall only
+0.43 m off, so the visible change is small. The fix removes a systematic error
+that was unbounded in principle, not a large error that was showing.
 
 This is still a site-wide average, not a per-row survey -- real row lines can
 still drift from these numbers locally. Re-run it if the boundary or site
 changes: `python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojson`.
 
+## Resolution: rows are finer than the data behind them
+
+Rows sit 5.38 m apart; FortyGuard's finest heatmap granularity is 60 m. About
+eleven rows therefore share every tile, and on the committed run 146 scored
+rows were coloured from just **21 distinct tiles**. The per-row map is a
+presentation of tile-resolution data at row resolution -- neighbouring rows
+usually share one measurement rather than each carrying its own.
+
+This is also why the percentile is row-weighted rather than tile-weighted: on
+the committed run the row-weighted p75 cutoff was 2.72 hours against 2.90 for
+a distinct-tile p75. Row-weighting is the right question for a ranked
+inspection list, but the two are not interchangeable, so every label states
+which is in use. The map says so on its own face.
+
 ## Known limitations (be upfront about these in the demo)
 
 - **Panel rows are a measured average, not a per-row survey.** See above --
-  pitch/width are measured from real imagery, but individual rows can still
-  deviate from that average locally.
+  pitch, width, and phase are measured from real imagery, but individual rows
+  can still deviate from that site-wide average locally.
+- **Row resolution exceeds data resolution.** 5.38 m rows coloured from 60 m
+  tiles; see "Resolution" above. The map shows per-row polygons, not per-row
+  measurements.
+- **Some rows have no data.** Rows whose centroid falls in no returned tile
+  are reported `at_risk: null` and rendered grey -- unknown, not cleared. They
+  are excluded from the percentile and from the at-risk denominator.
 - **The hotspot cutoff reflects one day, not sustained recurrence.** "Runs
   consistently hotter" implies persistence across multiple days; the current
   demo uses a single representative day (FortyGuard's 30 heatmap
@@ -196,21 +258,25 @@ changes: `python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojs
   onto approximated geometry instead of using their segmentation endpoint.
 - **API quota:** the FortyGuard account used here is capped at 30 heatmap
   requests/day. Each `heat_risk.py` run costs one request (two with
-  `--pv-model`, for the extra irradiance call).
+  `--pv-model`, for the extra irradiance call) -- unless it is served from the
+  on-disk result cache, which makes repeat runs of an identical request free.
 
 ## Project layout
 
 ```
-data/kml/            KML site boundaries (Google Earth exports)
+data/kml/             KML site boundaries (Google Earth exports)
 data/geojson/         Converted boundaries + generated panel rows + risk output
+data/fortyguard/      Cached Esri imagery tiles + cached API results (gitignored)
 docs/                 Leaflet visualization, published via GitHub Pages
+tests/                Offline regression tests (pytest; no API calls)
 scripts/
   kml_to_geojson.py   KML -> GeoJSON boundary conversion
   geo_utils.py        Local lon/lat <-> meters projection (site-scale accuracy)
   satellite_tiles.py  Esri World Imagery tile fetch/stitch + pixel<->lonlat math
-  measure_row_geometry.py  Measures real row pitch/width from a satellite mosaic
-  panel_rows.py       Approximate panel-row geometry generator
-  fortyguard_client.py FortyGuard API client (heatmap, env_params, status polling)
+  measure_row_geometry.py  Measures real row pitch/width/phase from a satellite mosaic
+  panel_rows.py       Approximate panel-row geometry generator (pitch/width/phase)
+  fortyguard_client.py FortyGuard API client (heatmap, env_params, polling,
+                      result caching, 429/5xx retry with backoff)
   pv_thermal.py       NOCT cell-temperature + power-loss model
   heat_risk.py        End-to-end pipeline: heatmap + irradiance -> rows -> risk
 ```

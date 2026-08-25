@@ -18,8 +18,10 @@ cp .env.example .env   # fill in FORTYGUARD_API_KEY
 
 ```
 python scripts/kml_to_geojson.py                 # data/kml/*.kml -> data/geojson/*.geojson
+python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojson  # pitch/width/phase
 python scripts/panel_rows.py data/geojson/solar_form_2.geojson   # approximate panel rows
 python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD
+python -m pytest tests/ -q                       # offline; never calls the API
 ```
 
 - `scripts/fortyguard_client.py` — client for FortyGuard's `POST /v1/heatmap`
@@ -28,14 +30,19 @@ python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD
   `result.map_data` tiles and `result.stats_data`).
 - `scripts/panel_rows.py` — FortyGuard's satellite segmentation has no "solar
   panel" class, so individual panel rows are approximated ourselves: parallel
-  strips at a configurable pitch/width/orientation (default 6m / 2.5m /
-  north-south, a rough read of the visible row pattern in satellite imagery,
-  not a surveyed layout), clipped to the site polygon.
+  strips at a configurable pitch/width/phase/orientation (default 5.38m /
+  2.82m / 4.86m / north-south, all measured from satellite imagery by
+  `measure_row_geometry.py`, not a surveyed layout), clipped to the site
+  polygon. Fragments below `min_area_m2` are dropped as clipping slivers.
+  The phase is not optional: without it the strip lattice is anchored to the
+  projection origin and can sit half a pitch off the real rows.
 - `scripts/heat_risk.py` — ties it together: submits one heatmap request for
   the site, generates panel rows, looks up which tile each row's centroid
-  falls in, and flags rows against a temperature threshold (also a rough
-  proxy — it compares ambient/land-surface temperature to a cutoff, not a
-  validated panel damage spec).
+  falls in, and flags rows against a site-relative percentile cutoff (a rough
+  proxy — it ranks exceedance-hours within the site, not a validated panel
+  damage spec). `at_risk` is three-state: rows with no covering tile are
+  `null` (unknown), never `false`. The percentile is row-weighted, and every
+  label must say so — tile-weighting gives a materially different cutoff.
 - `scripts/geo_utils.py` — local equirectangular lon/lat <-> meters projection,
   accurate enough at single-site scale (~1km).
 
@@ -43,7 +50,9 @@ python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD
 
 - **30 heatmap requests/day limit.** Never call the live API without checking
   with the developer first — always name what a call would confirm and get
-  a go-ahead, even for a single diagnostic request.
+  a go-ahead, even for a single diagnostic request. Completed results are
+  cached under `data/fortyguard/_response_cache/` (gitignored), so re-running
+  an identical request is free; `--no-cache` forces a live call.
 - **Recent dates return empty tiles.** A request for "yesterday" relative to
   the current date came back `200 Completed` with zero tiles, for both this
   site and FortyGuard's own documented example polygon — a backend processing

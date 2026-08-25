@@ -1,8 +1,10 @@
 {
   "pitch_m": 5.38,
   "width_m": 2.82,
+  "offset_m": 4.86,
   "orientation_deg": 0.0,
   "pitch_px": 21,
+  "dark_centre_bin": 4.0,
   "autocorrelation": 0.3366,
   "zoom": 19,
   "meters_per_pixel": 0.256
