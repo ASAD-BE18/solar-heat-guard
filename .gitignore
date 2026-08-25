@@ -5,3 +5,5 @@ __pycache__/
 .venv/
 .claude/
 data/fortyguard/_tile_cache/
+data/fortyguard/_response_cache/
+.pytest_cache/
