@@ -6,17 +6,30 @@
    hotspot.
 
 Default mode (analytic-type=exceedance): flags rows whose exceedance-hours
-sit in the top --risk-percentile of *this site's own tiles* -- i.e. "runs
+sit in the top --risk-percentile of *the site's own rows* -- i.e. "runs
 consistently hotter than the rest of the site", a site-relative signal with
 no externally-chosen absolute cutoff. Pair with --threshold set to the
 site's own measured average temperature (see README) so "exceedance" means
 "hours above this site's typical operating temperature", not an arbitrary
 number.
 
+The percentile is taken over rows, not over distinct tiles: the deliverable
+is a ranked inspection list of rows, and tiles are far coarser than rows
+(60 m tiles vs a 5.38 m row pitch), so many rows share a tile. The two
+weightings give materially different cutoffs -- see the README's resolution
+note.
+
 Alternative mode (--pv-model, needs analytic-type=tcm): estimates actual
 cell temperature and % power loss via a NOCT thermal model (pv_thermal.py).
 Useful for a "real world impact" number, but not needed for the hotspot
 framing above -- off by default.
+
+Rows whose centroid falls in no returned tile are reported with at_risk=null
+(unknown), never as false -- absence of data is not evidence of safety.
+
+Completed API results are cached on disk (data/fortyguard/_response_cache),
+keyed by request payload, so re-running this script with the same parameters
+costs no quota. Pass --no-cache to force a live request.
 
 Note (confirmed 2026-08-23): FortyGuard's data has a processing lag -- a
 request for "yesterday" returned zero tiles for two different sites, while
@@ -35,85 +48,104 @@ from shapely.prepared import prep
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fortyguard_client import FortyGuardClient
-from panel_rows import generate_rows
+from panel_rows import generate_rows, MIN_ROW_AREA_M2
 import pv_thermal
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
-# Tile property holding the analytic value differs by analytic_type and isn't
-# fully documented for exceedance/persistence -- try known/likely names in
-# order rather than assuming one.
-VALUE_FIELD_CANDIDATES = [
-    "average_temperature", "average_value", "value",
-    "exceedance_hours", "persistence_hours", "hours",
-]
+# Which tile property holds the analytic value depends on which analytic was
+# requested, and is not fully documented for exceedance/persistence. Keyed by
+# analytic_type so an exceedance run can never silently read a temperature
+# field that happens to also be present on the tile (and vice versa); the
+# generic "value"/"average_value" names are last-resort fallbacks only.
+VALUE_FIELDS_BY_ANALYTIC = {
+    "tcm": ["average_temperature", "temperature", "average_value", "value"],
+    "time_of_measure": ["time_of_measure", "measure_time", "average_value", "value"],
+    "exceedance": ["exceedance_hours", "exceedance", "hours", "average_value", "value"],
+    "persistence": ["persistence_hours", "persistence", "hours", "average_value", "value"],
+}
 
 
-def pick_value_field(tile_properties):
-    for candidate in VALUE_FIELD_CANDIDATES:
+def pick_value_field(tile_properties, analytic_type):
+    for candidate in VALUE_FIELDS_BY_ANALYTIC.get(analytic_type, ["value"]):
         if candidate in tile_properties:
             return candidate
-    numeric_keys = [k for k, v in tile_properties.items() if k != "tile_id" and isinstance(v, (int, float))]
+    numeric_keys = [k for k, v in tile_properties.items()
+                    if k != "tile_id" and isinstance(v, (int, float)) and not isinstance(v, bool)]
     return numeric_keys[0] if numeric_keys else None
 
 
-def find_tile_properties(centroid, prepared_tiles):
-    for prepared, props in prepared_tiles:
-        if prepared.contains(centroid):
-            return props
-    return None
+def match_rows_to_tiles(row_polygons, tile_features, analytic_type):
+    """Match each row centroid to the tile containing it, in one pass.
 
-
-def classify_rows(row_polygons, tile_features, threshold, strict_greater=False):
-    value_field = pick_value_field(tile_features[0]["properties"]) if tile_features else None
+    Returns (matches, value_field), where matches is a list of
+    {geometry, tile_id, value}; tile_id and value are None for a row that
+    falls in no tile.
+    """
+    value_field = pick_value_field(tile_features[0]["properties"], analytic_type) if tile_features else None
     prepared_tiles = [(prep(shape(f["geometry"])), f["properties"]) for f in tile_features]
 
-    results = []
-    for i, row in enumerate(row_polygons):
-        tile_props = find_tile_properties(row.centroid, prepared_tiles)
-        value = tile_props.get(value_field) if (tile_props and value_field) else None
-        if value is None:
-            at_risk = False
-        else:
-            at_risk = value > threshold if strict_greater else value >= threshold
-        results.append({
+    matches = []
+    for row in row_polygons:
+        centroid = row.centroid
+        props = None
+        for prepared, tile_props in prepared_tiles:
+            if prepared.contains(centroid):
+                props = tile_props
+                break
+        matches.append({
             "geometry": row,
-            "properties": {"row_id": i, "value_field": value_field, "tile_value": value, "at_risk": at_risk},
+            "tile_id": props.get("tile_id") if props else None,
+            "value": props.get(value_field) if (props and value_field) else None,
         })
-    return results
+    return matches, value_field
 
 
-def classify_rows_pv(row_polygons, tile_features, ghi_w_m2, noct_c, temp_coeff_pct_per_c, max_operating_temp_c):
-    """Classify rows using the NOCT cell-temperature + power-loss model (see pv_thermal.py)."""
-    value_field = pick_value_field(tile_features[0]["properties"]) if tile_features else None
-    prepared_tiles = [(prep(shape(f["geometry"])), f["properties"]) for f in tile_features]
-
+def classify(matches, value_field, threshold):
+    """Flag rows at or above threshold. at_risk is None where no tile matched
+    -- unknown, not safe."""
     results = []
-    for i, row in enumerate(row_polygons):
-        tile_props = find_tile_properties(row.centroid, prepared_tiles)
-        ambient_c = tile_props.get(value_field) if (tile_props and value_field) else None
-        if ambient_c is None:
-            results.append({
-                "geometry": row,
-                "properties": {"row_id": i, "ambient_temperature_c": None, "ghi_w_m2": ghi_w_m2,
-                               "cell_temperature_c": None, "power_loss_percent": None, "at_risk": False},
-            })
-            continue
-        cell_c = pv_thermal.cell_temperature(ambient_c, ghi_w_m2, noct_c)
-        loss_pct = pv_thermal.power_loss_percent(cell_c, temp_coeff_pct_per_c)
+    for i, m in enumerate(matches):
+        value = m["value"]
         results.append({
-            "geometry": row,
+            "geometry": m["geometry"],
             "properties": {
                 "row_id": i,
-                "ambient_temperature_c": ambient_c,
-                "ghi_w_m2": ghi_w_m2,
-                "cell_temperature_c": cell_c,
-                "power_loss_percent": loss_pct,
-                "at_risk": cell_c >= max_operating_temp_c,
+                "tile_id": m["tile_id"],
+                "value_field": value_field,
+                "tile_value": value,
+                "at_risk": None if value is None else bool(value >= threshold),
             },
         })
     return results
+
+
+def classify_pv(matches, ghi_w_m2, noct_c, temp_coeff_pct_per_c, max_operating_temp_c):
+    """Classify rows using the NOCT cell-temperature + power-loss model (see pv_thermal.py)."""
+    results = []
+    for i, m in enumerate(matches):
+        ambient_c = m["value"]
+        if ambient_c is None:
+            props = {"row_id": i, "tile_id": m["tile_id"], "ambient_temperature_c": None,
+                     "ghi_w_m2": ghi_w_m2, "cell_temperature_c": None,
+                     "power_loss_percent": None, "at_risk": None}
+        else:
+            cell_c = pv_thermal.cell_temperature(ambient_c, ghi_w_m2, noct_c)
+            props = {"row_id": i, "tile_id": m["tile_id"], "ambient_temperature_c": ambient_c,
+                     "ghi_w_m2": ghi_w_m2, "cell_temperature_c": cell_c,
+                     "power_loss_percent": pv_thermal.power_loss_percent(cell_c, temp_coeff_pct_per_c),
+                     "at_risk": bool(cell_c >= max_operating_temp_c)}
+        results.append({"geometry": m["geometry"], "properties": props})
+    return results
+
+
+def summarize(results):
+    """Returns (at_risk, no_data, scored) -- scored excludes no-data rows, so
+    the at-risk fraction is never diluted by rows we could not evaluate."""
+    at_risk = sum(1 for r in results if r["properties"]["at_risk"] is True)
+    no_data = sum(1 for r in results if r["properties"]["at_risk"] is None)
+    return at_risk, no_data, len(results) - no_data
 
 
 def results_to_geojson(results, metadata=None):
@@ -135,15 +167,19 @@ def main():
     parser.add_argument("--threshold", type=float, default=35.5, help="FortyGuard exceedance/persistence threshold, deg C -- set this to the site's own measured average temperature for the window, not an arbitrary number (see README)")
     parser.add_argument("--direction", default="above", choices=["above", "below"], help="Only used by exceedance/persistence")
     parser.add_argument("--risk-percentile", type=float, default=75.0,
-                         help="For exceedance/persistence: flag rows whose value is at/above this percentile of THIS SITE's own tiles (site-relative hotspot detection, not an absolute cutoff)")
+                        help="For exceedance/persistence: flag rows whose value is at/above this percentile of THIS SITE's own rows (site-relative hotspot detection, not an absolute cutoff)")
     parser.add_argument("--pv-model", action=argparse.BooleanOptionalAction, default=False,
-                         help="Use the NOCT cell-temperature + power-loss model instead (needs analytic-type=tcm; 1 extra FortyGuard request for irradiance)")
+                        help="Use the NOCT cell-temperature + power-loss model instead (needs analytic-type=tcm; 1 extra FortyGuard request for irradiance)")
     parser.add_argument("--noct", type=float, default=pv_thermal.NOCT_DEFAULT_C, help="Module NOCT spec, deg C (typical default, not this site's real spec)")
     parser.add_argument("--temp-coeff", type=float, default=pv_thermal.TEMP_COEFF_DEFAULT_PCT_PER_C, help="Module temperature coefficient, %%/C (typical default)")
     parser.add_argument("--max-operating-temp", type=float, default=pv_thermal.MAX_OPERATING_TEMP_DEFAULT_C, help="Cell temperature (deg C) at/above which a row is flagged at-risk")
     parser.add_argument("--row-pitch", type=float, default=5.38, help="Meters; measured from imagery via measure_row_geometry.py, not eyeballed")
     parser.add_argument("--row-width", type=float, default=2.82, help="Meters; measured from imagery via measure_row_geometry.py, not eyeballed")
+    parser.add_argument("--row-offset", type=float, default=4.86, help="Meters; row-centre phase along the across-row axis, measured via measure_row_geometry.py")
     parser.add_argument("--row-orientation", type=float, default=0.0)
+    parser.add_argument("--min-row-area", type=float, default=MIN_ROW_AREA_M2, help="Drop clipped row fragments smaller than this, in m^2")
+    parser.add_argument("--no-cache", action="store_true",
+                        help="Ignore the on-disk response cache and spend a real API request")
     parser.add_argument("-o", "--output", default=None)
     args = parser.parse_args()
 
@@ -163,8 +199,8 @@ def main():
     is_thresholded_analytic = args.analytic_type in ("exceedance", "persistence")
 
     print("submitting heatmap request...")
-    client = FortyGuardClient()
-    activity_id = client.submit_heatmap(
+    client = FortyGuardClient(use_cache=not args.no_cache)
+    heatmap_payload = client.heatmap_payload(
         polygon_geojson=site_fc,
         date_time=date_time,
         granularity=args.granularity,
@@ -172,64 +208,76 @@ def main():
         threshold=args.threshold if is_thresholded_analytic else None,
         direction=args.direction if is_thresholded_analytic else None,
     )
-    print(f"activity_id={activity_id}, polling...")
-    result = client.poll_until_complete(activity_id, interval_seconds=5, timeout_seconds=180)
+    result = client.run("heatmap", heatmap_payload, interval_seconds=5, timeout_seconds=180)
 
-    tile_features = result["map_data"]["features"]
+    tile_features = (result.get("map_data") or {}).get("features") or []
     print(f"received {len(tile_features)} heatmap tiles")
     if not tile_features:
         print("WARNING: 0 tiles returned -- this date/location likely has no data yet. Aborting.", file=sys.stderr)
         sys.exit(1)
     print(f"tile[0] properties: {tile_features[0]['properties']}")
 
-    rows = generate_rows(site_polygon, args.row_pitch, args.row_width, args.row_orientation)
+    rows = generate_rows(site_polygon, args.row_pitch, args.row_width,
+                         args.row_orientation, args.row_offset, args.min_row_area)
     print(f"generated {len(rows)} panel-row segments")
+
+    matches, value_field = match_rows_to_tiles(rows, tile_features, args.analytic_type)
+    print(f"value field: {value_field}")
+    unmatched = sum(1 for m in matches if m["value"] is None)
+    if unmatched == len(matches):
+        print("ERROR: no row matched any tile -- check that the heatmap actually covers the site polygon.", file=sys.stderr)
+        sys.exit(1)
+    if unmatched:
+        print(f"NOTE: {unmatched}/{len(matches)} rows fall in no returned tile -- reported as at_risk=null (unknown), not as safe.",
+              file=sys.stderr)
 
     use_pv_model = args.pv_model and args.analytic_type == "tcm"
     if args.pv_model and args.analytic_type != "tcm":
         print("--pv-model needs actual temperature values, only available with --analytic-type tcm; skipping.", file=sys.stderr)
 
+    percentile_cutoff = None
     if use_pv_model:
-        value_field = pick_value_field(tile_features[0]["properties"])
-        temps = [f["properties"][value_field] for f in tile_features if f["properties"].get(value_field) is not None]
+        temps = [m["value"] for m in matches if m["value"] is not None]
         representative_ambient_c = sum(temps) / len(temps)
         centroid = site_polygon.centroid
 
         print(f"submitting env_params request for irradiance (ambient={representative_ambient_c:.2f} C)...")
-        env_activity_id = client.submit_env_params(
+        env_payload = client.env_params_payload(
             latitude=centroid.y, longitude=centroid.x, temperature=representative_ambient_c,
             date_time=date_time, analysis=["solar_irradiance"],
         )
-        env_result = client.poll_until_complete(env_activity_id, interval_seconds=5, timeout_seconds=180)
+        env_result = client.run("env_params", env_payload, interval_seconds=5, timeout_seconds=180)
         ghi_values = [loc["solar_irradiance"]["clear_sky"]["ghi"] for loc in env_result["locations"]]
         ghi_w_m2 = sum(ghi_values) / len(ghi_values)
         print(f"GHI={ghi_w_m2:.1f} W/m^2")
 
-        results = classify_rows_pv(rows, tile_features, ghi_w_m2, args.noct, args.temp_coeff, args.max_operating_temp)
-        at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
-        print(f"{at_risk_count}/{len(results)} rows at or above {args.max_operating_temp} C cell temperature")
-        percentile_cutoff = None
+        results = classify_pv(matches, ghi_w_m2, args.noct, args.temp_coeff, args.max_operating_temp)
+        at_risk_count, no_data, scored = summarize(results)
+        print(f"{at_risk_count}/{scored} scored rows at or above {args.max_operating_temp} C cell temperature")
     elif is_thresholded_analytic:
-        # Site-relative hotspot detection: FortyGuard's threshold param
-        # already picked out hours above/below args.threshold; here we flag
-        # rows whose tile sits in the top --risk-percentile of tiles that
-        # actually contain panel rows -- NOT all of this site's tiles, since
-        # many tiles cover boundary/gap areas with no rows in them at all,
-        # which would skew the percentile away from what rows actually see.
-        prelim = classify_rows(rows, tile_features, threshold=float("inf"), strict_greater=False)
-        row_values = [r["properties"]["tile_value"] for r in prelim if r["properties"]["tile_value"] is not None]
+        # Site-relative hotspot detection: FortyGuard's threshold param already
+        # picked out hours above/below args.threshold; here we flag rows whose
+        # value sits in the top --risk-percentile of the site's own rows.
+        # Row-weighted on purpose (see module docstring). Rows with no tile are
+        # excluded from the percentile and stay at_risk=null.
+        row_values = [m["value"] for m in matches if m["value"] is not None]
         percentile_cutoff = float(np.percentile(row_values, args.risk_percentile))
-        print(f"row-covered tile values range {min(row_values):.2f}-{max(row_values):.2f}, "
+        distinct_tiles = len({m["tile_id"] for m in matches if m["value"] is not None})
+        print(f"{len(row_values)} scored rows over {distinct_tiles} distinct tiles, "
+              f"values {min(row_values):.2f}-{max(row_values):.2f}, "
               f"p{args.risk_percentile:.0f} cutoff={percentile_cutoff:.2f}")
 
-        results = classify_rows(rows, tile_features, threshold=percentile_cutoff, strict_greater=False)
-        at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
-        print(f"{at_risk_count}/{len(results)} rows flagged as hotspots (>= p{args.risk_percentile:.0f} of this site's own tiles)")
+        results = classify(matches, value_field, percentile_cutoff)
+        at_risk_count, no_data, scored = summarize(results)
+        print(f"{at_risk_count}/{scored} scored rows flagged as hotspots "
+              f"(>= p{args.risk_percentile:.0f} of this site's own rows)")
     else:
-        results = classify_rows(rows, tile_features, threshold=args.threshold, strict_greater=False)
-        at_risk_count = sum(1 for r in results if r["properties"]["at_risk"])
-        print(f"{at_risk_count}/{len(results)} rows flagged at risk")
-        percentile_cutoff = None
+        results = classify(matches, value_field, args.threshold)
+        at_risk_count, no_data, scored = summarize(results)
+        print(f"{at_risk_count}/{scored} scored rows flagged at risk")
+
+    if no_data:
+        print(f"{no_data} rows have no data (at_risk=null)")
 
     metadata = {
         "date": args.date,
@@ -241,14 +289,20 @@ def main():
         "direction": args.direction if is_thresholded_analytic else None,
         "risk_percentile": args.risk_percentile if is_thresholded_analytic else None,
         "percentile_cutoff": percentile_cutoff,
+        "percentile_basis": "rows" if is_thresholded_analytic else None,
+        "n_tiles": len(tile_features),
+        "n_tiles_with_rows": len({m["tile_id"] for m in matches if m["tile_id"] is not None}),
         "pv_model": use_pv_model,
         "noct_c": args.noct if use_pv_model else None,
         "temp_coeff_pct_per_c": args.temp_coeff if use_pv_model else None,
         "max_operating_temp_c": args.max_operating_temp if use_pv_model else None,
         "row_pitch_m": args.row_pitch,
         "row_width_m": args.row_width,
+        "row_offset_m": args.row_offset,
         "row_orientation_deg": args.row_orientation,
         "n_rows": len(results),
+        "n_scored": scored,
+        "n_no_data": no_data,
         "n_at_risk": at_risk_count,
     }
 

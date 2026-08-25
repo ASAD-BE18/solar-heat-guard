@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <title>solar-heat-guard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+      crossorigin="anonymous" />
 <style>
   html, body, #map { height: 100%; margin: 0; }
   #panel {
@@ -18,6 +20,7 @@
   #panel .swatch { width: 14px; height: 14px; border-radius: 2px; flex: none; }
   #panel .stat { margin-top: 8px; color: #333; }
   #panel .toggle-row { display: flex; align-items: center; gap: 6px; margin: 8px 0 2px; }
+  #panel .caveat { margin-top: 8px; color: #666; font-size: 11px; line-height: 1.35; }
 </style>
 </head>
 <body>
@@ -31,8 +34,11 @@
   <div id="meta" class="stat"></div>
   <div id="legend"></div>
   <div id="stats" class="stat"></div>
+  <div id="caveat" class="caveat"></div>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+        crossorigin="anonymous"></script>
 <script src="data.js"></script>
 <script>
 // PANEL_ROWS features may carry either the PV-model properties
@@ -43,10 +49,16 @@ function hasPvModel(features) {
   return features.some(f => f.properties.cell_temperature_c != null);
 }
 
+const NO_DATA_COLOR = "#9e9e9e";
+
+// at_risk is deliberately three-state: true / false / null. A row whose
+// centroid fell in no heatmap tile is UNKNOWN, not safe, and must never
+// render in the same colour as a row we actually measured and cleared.
 function rowColor(props, pvModel, colorLo, colorHi) {
+  if (props.at_risk == null) return NO_DATA_COLOR;
   if (!pvModel) return props.at_risk ? "#d73027" : "#4575b4";
   const t = props.cell_temperature_c;
-  if (t == null) return "#999";
+  if (t == null) return NO_DATA_COLOR;
   // blue (cool) -> yellow -> red (hot), scaled from 25C (STC reference) up
   // to the configured max-operating-temp risk cutoff, so the gradient
   // actually reflects "how close to the risk threshold", not an arbitrary
@@ -81,17 +93,23 @@ const rowsLayer = L.geoJSON(PANEL_ROWS, {
   },
   onEachFeature: (f, layer) => {
     const p = f.properties;
-    let html = `<b>Row ${p.row_id}</b><br>`;
-    if (pvModel) {
-      html += `Ambient: ${p.ambient_temperature_c?.toFixed(1)} &deg;C<br>`;
-      html += `GHI: ${p.ghi_w_m2?.toFixed(0)} W/m&sup2;<br>`;
-      html += `Cell temp: ${p.cell_temperature_c?.toFixed(1)} &deg;C<br>`;
-      html += `Power loss: ${p.power_loss_percent?.toFixed(1)}%<br>`;
+    let html = `<b>Row ${p.row_id}</b>`;
+    if (p.tile_id != null) html += ` <span style="color:#777">(tile ${p.tile_id})</span>`;
+    html += "<br>";
+    if (p.at_risk == null) {
+      html += `<i>No heatmap tile covers this row &mdash; unknown, not cleared.</i>`;
     } else {
-      html += `${p.value_field}: ${p.tile_value}<br>`;
+      if (pvModel) {
+        html += `Ambient: ${p.ambient_temperature_c?.toFixed(1)} &deg;C<br>`;
+        html += `GHI: ${p.ghi_w_m2?.toFixed(0)} W/m&sup2;<br>`;
+        html += `Cell temp: ${p.cell_temperature_c?.toFixed(1)} &deg;C<br>`;
+        html += `Power loss: ${p.power_loss_percent?.toFixed(1)}%<br>`;
+      } else {
+        html += `${p.value_field}: ${p.tile_value}<br>`;
+      }
+      const flagLabel = (md && md.risk_percentile != null) ? "HOTSPOT" : "AT RISK";
+      html += `<b>${p.at_risk ? flagLabel : "ok"}</b>`;
     }
-    const flagLabel = (md && md.risk_percentile != null) ? "HOTSPOT" : "AT RISK";
-    html += `<b>${p.at_risk ? flagLabel : "ok"}</b>`;
     layer.bindPopup(html);
   },
 }).addTo(map);
@@ -106,12 +124,19 @@ document.getElementById("overlay-toggle").addEventListener("change", e => {
   }
 });
 
-const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
+const props = PANEL_ROWS.features.map(f => f.properties);
+const atRiskCount = props.filter(p => p.at_risk === true).length;
+const noDataCount = props.filter(p => p.at_risk == null).length;
+const scoredCount = props.length - noDataCount;
 const flagWord = (md && md.risk_percentile != null) ? "flagged as hotspots" : "at risk";
-let statsHtml = `${atRiskCount} / ${PANEL_ROWS.features.length} rows ${flagWord}`;
+
+// Denominator is SCORED rows, not all rows -- folding unmeasurable rows into
+// the denominator would quietly understate the at-risk rate.
+let statsHtml = `${atRiskCount} / ${scoredCount} scored rows ${flagWord}`;
+if (noDataCount) statsHtml += `<br><span style="color:#666">${noDataCount} row(s) with no data (not counted)</span>`;
 if (pvModel) {
-  const losses = PANEL_ROWS.features.map(f => f.properties.power_loss_percent).filter(v => v != null);
-  const temps = PANEL_ROWS.features.map(f => f.properties.cell_temperature_c).filter(v => v != null);
+  const losses = props.map(p => p.power_loss_percent).filter(v => v != null);
+  const temps = props.map(p => p.cell_temperature_c).filter(v => v != null);
   const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
   if (losses.length) {
     statsHtml += `<br><b>Avg cell temp:</b> ${avg(temps).toFixed(1)}&deg;C`;
@@ -132,14 +157,27 @@ if (md) {
     lines.push(`<b>Risk cutoff:</b> cell temp ≥ ${md.max_operating_temp_c}&deg;C`);
   } else if (md.risk_percentile != null) {
     lines.push(`<b>Metric:</b> hours above ${md.threshold}&deg;C (site's own measured average)`);
-    lines.push(`<b>Hotspot cutoff:</b> top ${(100 - md.risk_percentile).toFixed(0)}% of this site's tiles (&ge; ${md.percentile_cutoff?.toFixed(2)} hrs)`);
+    // The percentile is taken over ROWS, not over distinct tiles -- the two
+    // give materially different cutoffs, so the label has to say which.
+    lines.push(`<b>Hotspot cutoff:</b> top ${(100 - md.risk_percentile).toFixed(0)}% of this site's own rows (&ge; ${md.percentile_cutoff?.toFixed(2)} hrs)`);
   } else if (md.analytic_type === "tcm") {
     lines.push(`<b>Risk cutoff:</b> ${md.threshold}&deg;C`);
   } else {
     lines.push(`<b>Risk cutoff:</b> &ge; ${md.threshold} hrs`);
   }
-  lines.push(`<b>Row geometry:</b> ${md.row_pitch_m}m pitch, ${md.row_width_m}m width (approximated)`);
+  let geom = `${md.row_pitch_m}m pitch, ${md.row_width_m}m width`;
+  if (md.row_offset_m != null) geom += `, ${md.row_offset_m}m phase`;
+  lines.push(`<b>Row geometry:</b> ${geom} (measured from imagery)`);
   document.getElementById("meta").innerHTML = lines.join("<br>");
+
+  // Rows are far finer than the heatmap tiles they are coloured from; say so
+  // rather than letting the per-row rendering imply per-row measurement.
+  if (md.n_tiles_with_rows && md.granularity_m) {
+    document.getElementById("caveat").innerHTML =
+      `Rows are ${md.row_pitch_m} m apart but temperature comes from ` +
+      `${md.granularity_m} m tiles &mdash; ${scoredCount} rows are coloured from ` +
+      `${md.n_tiles_with_rows} distinct tile values, so neighbouring rows often share one measurement.`;
+  }
 } else {
   document.getElementById("meta").textContent = "(no run metadata in this dataset)";
 }
@@ -154,6 +192,10 @@ if (pvModel) {
   legend.innerHTML = `
     <div class="legend-item"><div class="swatch" style="background:#d73027"></div>${flagWord}</div>
     <div class="legend-item"><div class="swatch" style="background:#4575b4"></div>ok</div>`;
+}
+if (noDataCount) {
+  legend.innerHTML += `
+    <div class="legend-item"><div class="swatch" style="background:${NO_DATA_COLOR}"></div>no data (unknown)</div>`;
 }
 </script>
 </body>
