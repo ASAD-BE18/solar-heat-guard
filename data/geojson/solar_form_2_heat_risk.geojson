@@ -5,10 +5,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 0,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -39,10 +37,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 1,
-        "ambient_temperature_c": 35.5687,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4773,
-        "power_loss_percent": -13.861374,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -77,11 +73,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 2,
-        "ambient_temperature_c": 35.5643,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4729,
-        "power_loss_percent": -13.859702,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 3.0343,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -115,11 +109,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 3,
-        "ambient_temperature_c": 35.5564,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.464999999999996,
-        "power_loss_percent": -13.856699999999998,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.98,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -153,11 +145,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 4,
-        "ambient_temperature_c": 35.5451,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4537,
-        "power_loss_percent": -13.852405999999998,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.91,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -191,11 +181,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 5,
-        "ambient_temperature_c": 35.5451,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4537,
-        "power_loss_percent": -13.852405999999998,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7328,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -229,10 +217,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 6,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -271,10 +257,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 7,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -309,10 +293,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 8,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -347,10 +329,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 9,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -385,10 +365,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 10,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -423,10 +401,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 11,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -461,10 +437,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 12,
-        "ambient_temperature_c": 35.5311,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4397,
-        "power_loss_percent": -13.847086000000001,
+        "value_field": "value",
+        "tile_value": 2.6306,
         "at_risk": false
       },
       "geometry": {
@@ -499,10 +473,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 13,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -537,10 +509,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 14,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -575,10 +545,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 15,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -613,10 +581,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 16,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -651,10 +617,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 17,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -689,10 +653,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 18,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -727,10 +689,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 19,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -765,10 +725,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 20,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -803,10 +761,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 21,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -841,10 +797,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 22,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -879,10 +833,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 23,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.629,
         "at_risk": false
       },
       "geometry": {
@@ -917,10 +869,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 24,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -955,10 +905,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 25,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -993,10 +941,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 26,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1031,10 +977,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 27,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1069,10 +1013,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 28,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1107,10 +1049,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 29,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1145,10 +1085,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 30,
-        "ambient_temperature_c": 35.5309,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4395,
-        "power_loss_percent": -13.847010000000001,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1183,10 +1121,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 31,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1221,10 +1157,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 32,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1259,10 +1193,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 33,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1297,10 +1229,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 34,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6273,
         "at_risk": false
       },
       "geometry": {
@@ -1335,10 +1265,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 35,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1373,10 +1301,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 36,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1411,10 +1337,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 37,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1449,10 +1373,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 38,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1487,10 +1409,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 39,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1525,10 +1445,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 40,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1563,10 +1481,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 41,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1601,10 +1517,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 42,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1639,10 +1553,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 43,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1677,10 +1589,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 44,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1715,10 +1625,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 45,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.6257,
         "at_risk": false
       },
       "geometry": {
@@ -1753,10 +1661,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 46,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1791,10 +1697,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 47,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1829,10 +1733,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 48,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1867,10 +1769,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 49,
-        "ambient_temperature_c": 35.5306,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4392,
-        "power_loss_percent": -13.846896,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1905,10 +1805,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 50,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1943,10 +1841,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 51,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -1981,10 +1877,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 52,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -2019,10 +1913,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 53,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -2057,10 +1949,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 54,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -2095,10 +1985,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 55,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -2133,10 +2021,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 56,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.624,
         "at_risk": false
       },
       "geometry": {
@@ -2171,10 +2057,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 57,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2209,10 +2093,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 58,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2247,10 +2129,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 59,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2285,10 +2165,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 60,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2323,10 +2201,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 61,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2361,10 +2237,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 62,
-        "ambient_temperature_c": 35.5148,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4234,
-        "power_loss_percent": -13.840892,
+        "value_field": "value",
+        "tile_value": 2.5143,
         "at_risk": false
       },
       "geometry": {
@@ -2399,10 +2273,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 63,
-        "ambient_temperature_c": 35.5148,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4234,
-        "power_loss_percent": -13.840892,
+        "value_field": "value",
+        "tile_value": 2.5143,
         "at_risk": false
       },
       "geometry": {
@@ -2437,10 +2309,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 64,
-        "ambient_temperature_c": 35.5148,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4234,
-        "power_loss_percent": -13.840892,
+        "value_field": "value",
+        "tile_value": 2.5143,
         "at_risk": false
       },
       "geometry": {
@@ -2475,10 +2345,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 65,
-        "ambient_temperature_c": 35.5148,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4234,
-        "power_loss_percent": -13.840892,
+        "value_field": "value",
+        "tile_value": 2.5143,
         "at_risk": false
       },
       "geometry": {
@@ -2513,10 +2381,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 66,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2551,10 +2417,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 67,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -2585,10 +2449,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 68,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2623,10 +2485,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 69,
-        "ambient_temperature_c": 35.5304,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.439,
-        "power_loss_percent": -13.846820000000001,
+        "value_field": "value",
+        "tile_value": 2.6223,
         "at_risk": false
       },
       "geometry": {
@@ -2661,10 +2521,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 70,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2699,10 +2557,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 71,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2737,10 +2593,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 72,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2775,10 +2629,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 73,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2813,10 +2665,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 74,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2851,10 +2701,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 75,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2889,10 +2737,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 76,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2927,10 +2773,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 77,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -2965,10 +2809,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 78,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -3003,10 +2845,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 79,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -3041,10 +2881,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 80,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.6207,
         "at_risk": false
       },
       "geometry": {
@@ -3079,10 +2917,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 81,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3117,10 +2953,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 82,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3155,10 +2989,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 83,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3193,10 +3025,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 84,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3231,10 +3061,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 85,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3269,10 +3097,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 86,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3307,10 +3133,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 87,
-        "ambient_temperature_c": 35.5302,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4388,
-        "power_loss_percent": -13.846744000000001,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3345,10 +3169,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 88,
-        "ambient_temperature_c": 35.5299,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4385,
-        "power_loss_percent": -13.84663,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3383,10 +3205,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 89,
-        "ambient_temperature_c": 35.5299,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4385,
-        "power_loss_percent": -13.84663,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3421,10 +3241,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 90,
-        "ambient_temperature_c": 35.5299,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4385,
-        "power_loss_percent": -13.84663,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3459,10 +3277,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 91,
-        "ambient_temperature_c": 35.5299,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4385,
-        "power_loss_percent": -13.84663,
+        "value_field": "value",
+        "tile_value": 2.619,
         "at_risk": false
       },
       "geometry": {
@@ -3497,10 +3313,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 92,
-        "ambient_temperature_c": 35.5299,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4385,
-        "power_loss_percent": -13.84663,
+        "value_field": "value",
+        "tile_value": 2.6174,
         "at_risk": false
       },
       "geometry": {
@@ -3535,11 +3349,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 93,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3573,10 +3385,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 94,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -3607,11 +3417,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 95,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3645,11 +3453,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 96,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3683,11 +3489,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 97,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3721,11 +3525,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 98,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3759,11 +3561,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 99,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3797,11 +3597,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 100,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3835,11 +3633,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 101,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3873,11 +3669,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 102,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3911,11 +3705,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 103,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3949,11 +3741,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 104,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.7204,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -3987,10 +3777,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 105,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4025,10 +3813,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 106,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4063,10 +3849,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 107,
-        "ambient_temperature_c": 35.544,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4526,
-        "power_loss_percent": -13.851987999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4101,10 +3885,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 108,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4139,10 +3921,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 109,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4177,10 +3957,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 110,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4215,10 +3993,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 111,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4253,10 +4029,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 112,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4291,10 +4065,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 113,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4329,10 +4101,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 114,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4367,10 +4137,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 115,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7188,
         "at_risk": false
       },
       "geometry": {
@@ -4405,10 +4173,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 116,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7172,
         "at_risk": false
       },
       "geometry": {
@@ -4443,10 +4209,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 117,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
+        "value_field": "value",
+        "tile_value": 2.7172,
         "at_risk": false
       },
       "geometry": {
@@ -4481,11 +4245,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 118,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8127,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4531,11 +4293,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 119,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8127,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4569,11 +4329,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 120,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8127,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4607,11 +4365,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 121,
-        "ambient_temperature_c": 35.5438,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4524,
-        "power_loss_percent": -13.851911999999999,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8127,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4645,11 +4401,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 122,
-        "ambient_temperature_c": 35.5555,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4641,
-        "power_loss_percent": -13.856358,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8978,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4683,11 +4437,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 123,
-        "ambient_temperature_c": 35.5555,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4641,
-        "power_loss_percent": -13.856358,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8978,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4721,11 +4473,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 124,
-        "ambient_temperature_c": 35.5555,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4641,
-        "power_loss_percent": -13.856358,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8978,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4759,11 +4509,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 125,
-        "ambient_temperature_c": 35.5555,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4641,
-        "power_loss_percent": -13.856358,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8978,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4797,11 +4545,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 126,
-        "ambient_temperature_c": 35.5555,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4641,
-        "power_loss_percent": -13.856358,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8978,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4835,11 +4581,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 127,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4873,11 +4617,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 128,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4911,11 +4653,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 129,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4949,11 +4689,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 130,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -4987,11 +4725,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 131,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5025,11 +4761,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 132,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5063,11 +4797,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 133,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5101,11 +4833,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 134,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5139,11 +4869,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 135,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5177,11 +4905,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 136,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5215,11 +4941,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 137,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5253,11 +4977,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 138,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8965,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5291,11 +5013,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 139,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5329,11 +5049,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 140,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5367,11 +5085,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 141,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5405,11 +5121,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 142,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5443,11 +5157,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 143,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5481,11 +5193,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 144,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5519,11 +5229,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 145,
-        "ambient_temperature_c": 35.5553,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": 61.4639,
-        "power_loss_percent": -13.856282,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5557,11 +5265,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 146,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5595,11 +5301,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 147,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5633,11 +5337,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 148,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8953,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5671,11 +5373,9 @@
       "type": "Feature",
       "properties": {
         "row_id": 149,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
-        "at_risk": false
+        "value_field": "value",
+        "tile_value": 2.8098,
+        "at_risk": true
       },
       "geometry": {
         "type": "Polygon",
@@ -5709,10 +5409,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 150,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -5747,10 +5445,8 @@
       "type": "Feature",
       "properties": {
         "row_id": 151,
-        "ambient_temperature_c": null,
-        "ghi_w_m2": 863.62,
-        "cell_temperature_c": null,
-        "power_loss_percent": null,
+        "value_field": "value",
+        "tile_value": null,
         "at_risk": false
       },
       "geometry": {
@@ -5784,20 +5480,22 @@
   ],
   "metadata": {
     "date": "2024-07-15",
-    "start_time": "14:00",
-    "end_time": null,
-    "granularity_m": 100,
-    "analytic_type": "tcm",
-    "threshold": 40.0,
-    "direction": null,
-    "pv_model": true,
-    "noct_c": 44.0,
-    "temp_coeff_pct_per_c": -0.38,
-    "max_operating_temp_c": 85.0,
+    "start_time": "06:00",
+    "end_time": "18:00",
+    "granularity_m": 60,
+    "analytic_type": "exceedance",
+    "threshold": 35.5,
+    "direction": "above",
+    "risk_percentile": 75.0,
+    "percentile_cutoff": 2.7204,
+    "pv_model": false,
+    "noct_c": null,
+    "temp_coeff_pct_per_c": null,
+    "max_operating_temp_c": null,
     "row_pitch_m": 5.38,
     "row_width_m": 2.82,
     "row_orientation_deg": 0.0,
     "n_rows": 152,
-    "n_at_risk": 0
+    "n_at_risk": 47
   }
 }

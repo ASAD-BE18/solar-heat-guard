@@ -43,12 +43,15 @@ function hasPvModel(features) {
   return features.some(f => f.properties.cell_temperature_c != null);
 }
 
-function rowColor(props, pvModel) {
+function rowColor(props, pvModel, colorLo, colorHi) {
   if (!pvModel) return props.at_risk ? "#d73027" : "#4575b4";
   const t = props.cell_temperature_c;
   if (t == null) return "#999";
-  // blue (cool) -> yellow -> red (hot), scaled across a plausible cell-temp range
-  const lo = 40, hi = 90;
+  // blue (cool) -> yellow -> red (hot), scaled from 25C (STC reference) up
+  // to the configured max-operating-temp risk cutoff, so the gradient
+  // actually reflects "how close to the risk threshold", not an arbitrary
+  // fixed range that can make a genuinely hot cell read as pale/cool.
+  const lo = colorLo, hi = colorHi;
   const frac = Math.max(0, Math.min(1, (t - lo) / (hi - lo)));
   const r = Math.round(255 * Math.min(1, frac * 2));
   const g = Math.round(255 * (1 - Math.abs(frac - 0.5) * 2));
@@ -67,9 +70,15 @@ L.geoJSON(SITE_BOUNDARY, {
 }).addTo(map);
 
 const pvModel = hasPvModel(PANEL_ROWS.features);
+const md = PANEL_ROWS.metadata;
+const colorLo = 25; // STC reference temperature
+const colorHi = (md && md.max_operating_temp_c) || 90;
 
 const rowsLayer = L.geoJSON(PANEL_ROWS, {
-  style: f => ({ color: rowColor(f.properties, pvModel), weight: 1, fillColor: rowColor(f.properties, pvModel), fillOpacity: 0.55 }),
+  style: f => {
+    const c = rowColor(f.properties, pvModel, colorLo, colorHi);
+    return { color: c, weight: 1, fillColor: c, fillOpacity: 0.55 };
+  },
   onEachFeature: (f, layer) => {
     const p = f.properties;
     let html = `<b>Row ${p.row_id}</b><br>`;
@@ -81,7 +90,8 @@ const rowsLayer = L.geoJSON(PANEL_ROWS, {
     } else {
       html += `${p.value_field}: ${p.tile_value}<br>`;
     }
-    html += `<b>${p.at_risk ? "AT RISK" : "ok"}</b>`;
+    const flagLabel = (md && md.risk_percentile != null) ? "HOTSPOT" : "AT RISK";
+    html += `<b>${p.at_risk ? flagLabel : "ok"}</b>`;
     layer.bindPopup(html);
   },
 }).addTo(map);
@@ -97,7 +107,8 @@ document.getElementById("overlay-toggle").addEventListener("change", e => {
 });
 
 const atRiskCount = PANEL_ROWS.features.filter(f => f.properties.at_risk).length;
-let statsHtml = `${atRiskCount} / ${PANEL_ROWS.features.length} rows at risk`;
+const flagWord = (md && md.risk_percentile != null) ? "flagged as hotspots" : "at risk";
+let statsHtml = `${atRiskCount} / ${PANEL_ROWS.features.length} rows ${flagWord}`;
 if (pvModel) {
   const losses = PANEL_ROWS.features.map(f => f.properties.power_loss_percent).filter(v => v != null);
   const temps = PANEL_ROWS.features.map(f => f.properties.cell_temperature_c).filter(v => v != null);
@@ -109,7 +120,6 @@ if (pvModel) {
 }
 document.getElementById("stats").innerHTML = statsHtml;
 
-const md = PANEL_ROWS.metadata;
 if (md) {
   const timeWindow = md.end_time ? `${md.start_time}–${md.end_time}` : md.start_time;
   let lines = [
@@ -120,12 +130,12 @@ if (md) {
   if (md.pv_model) {
     lines.push(`<b>PV model:</b> NOCT=${md.noct_c}&deg;C, coeff=${md.temp_coeff_pct_per_c}%/&deg;C`);
     lines.push(`<b>Risk cutoff:</b> cell temp ≥ ${md.max_operating_temp_c}&deg;C`);
+  } else if (md.risk_percentile != null) {
+    lines.push(`<b>Metric:</b> hours above ${md.threshold}&deg;C (site's own measured average)`);
+    lines.push(`<b>Hotspot cutoff:</b> top ${(100 - md.risk_percentile).toFixed(0)}% of this site's tiles (&ge; ${md.percentile_cutoff?.toFixed(2)} hrs)`);
   } else if (md.analytic_type === "tcm") {
     lines.push(`<b>Risk cutoff:</b> ${md.threshold}&deg;C`);
   } else {
-    if (md.temperature_threshold_c != null) {
-      lines.push(`<b>Metric:</b> hours above ${md.temperature_threshold_c}&deg;C`);
-    }
     lines.push(`<b>Risk cutoff:</b> &ge; ${md.threshold} hrs`);
   }
   lines.push(`<b>Row geometry:</b> ${md.row_pitch_m}m pitch, ${md.row_width_m}m width (approximated)`);
@@ -137,12 +147,12 @@ if (md) {
 const legend = document.getElementById("legend");
 if (pvModel) {
   legend.innerHTML = `
-    <div class="legend-item"><div class="swatch" style="background:rgb(0,0,255)"></div>cooler cell temp</div>
-    <div class="legend-item"><div class="swatch" style="background:rgb(255,255,0)"></div>mid</div>
-    <div class="legend-item"><div class="swatch" style="background:rgb(255,0,0)"></div>hotter cell temp</div>`;
+    <div class="legend-item"><div class="swatch" style="background:rgb(0,0,255)"></div>${colorLo}&deg;C</div>
+    <div class="legend-item"><div class="swatch" style="background:rgb(255,255,0)"></div>${Math.round((colorLo + colorHi) / 2)}&deg;C</div>
+    <div class="legend-item"><div class="swatch" style="background:rgb(255,0,0)"></div>${colorHi}&deg;C (risk cutoff)</div>`;
 } else {
   legend.innerHTML = `
-    <div class="legend-item"><div class="swatch" style="background:#d73027"></div>at risk</div>
+    <div class="legend-item"><div class="swatch" style="background:#d73027"></div>${flagWord}</div>
     <div class="legend-item"><div class="swatch" style="background:#4575b4"></div>ok</div>`;
 }
 </script>
