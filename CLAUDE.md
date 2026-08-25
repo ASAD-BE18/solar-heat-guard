@@ -18,33 +18,56 @@ cp .env.example .env   # fill in FORTYGUARD_API_KEY
 
 ```
 python scripts/kml_to_geojson.py                 # data/kml/*.kml -> data/geojson/*.geojson
-python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojson  # pitch/width/phase
-python scripts/panel_rows.py data/geojson/solar_form_2.geojson   # approximate panel rows
-python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD
-python -m pytest tests/ -q                       # offline; never calls the API
+python scripts/detect_panel_rows.py data/geojson/solar_form_2.geojson --overlay /tmp/rows.png
+python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD     --start-time 06:00 --end-time 18:00 --granularity 60
+python scripts/build_viz_data.py data/geojson/solar_form_2.geojson     data/geojson/solar_form_2_heat_risk.geojson
+python -m pytest tests/ -q                       # offline; no API, no imagery
 ```
 
-- `scripts/fortyguard_client.py` â€” client for FortyGuard's `POST /v1/heatmap`
+- `scripts/fortyguard_client.py` — client for FortyGuard's `POST /v1/heatmap`
   (submit a job for a polygon + date/time + analytic_type) and
   `GET /v1/status/{activity_id}` (poll until `Completed`, then read
   `result.map_data` tiles and `result.stats_data`).
-- `scripts/panel_rows.py` â€” FortyGuard's satellite segmentation has no "solar
-  panel" class, so individual panel rows are approximated ourselves: parallel
-  strips at a configurable pitch/width/phase/orientation (default 5.38m /
-  2.82m / 4.86m / north-south, all measured from satellite imagery by
-  `measure_row_geometry.py`, not a surveyed layout), clipped to the site
-  polygon. Fragments below `min_area_m2` are dropped as clipping slivers.
-  The phase is not optional: without it the strip lattice is anchored to the
-  projection origin and can sit half a pitch off the real rows.
-- `scripts/heat_risk.py` â€” ties it together: submits one heatmap request for
-  the site, generates panel rows, looks up which tile each row's centroid
-  falls in, and flags rows against a site-relative percentile cutoff (a rough
-  proxy â€” it ranks exceedance-hours within the site, not a validated panel
-  damage spec). `at_risk` is three-state: rows with no covering tile are
-  `null` (unknown), never `false`. The percentile is row-weighted, and every
-  label must say so â€” tile-weighting gives a materially different cutoff.
-- `scripts/geo_utils.py` â€” local equirectangular lon/lat <-> meters projection,
+- `scripts/detect_panel_rows.py` — FortyGuard's satellite segmentation has no
+  "solar panel" class, so row geometry is detected from Esri World Imagery
+  (cached under `data/fortyguard/_tile_cache/`, no FortyGuard quota). Panels
+  read dark against bare soil; the script scans for the row **bearing** that
+  maximises across-row profile contrast, reads row centre lines off that
+  profile, then walks each row in ~5 m bins and keeps only the bins where the
+  imagery is actually dark. This site: bearing -1.51°, pitch 5.63 m, width
+  2.56 m, 135 row lines, 1244 runs, 41.2% of the site.
+  Three things this fixed, all of which shipped before — do not reintroduce
+  any of them:
+    1. **Bearing is not 0°.** The old code asserted rows run north-south "by
+       construction of the north-up mosaic". Bearing is a property of the
+       site, not the projection. Contrast at the true bearing is 0.92 against
+       0.10 at 0° — a mis-set bearing is loud, if you look.
+    2. **Never fit pitch/width/phase before the bearing.** A tilt smears the
+       profile and biases both (5.38/2.82 vs 5.63/2.56). Weak autocorrelation
+       (0.34) was the tell and was ignored.
+    3. **Never extrapolate a lattice across the site polygon.** The boundary
+       is hand-drawn and contains bare ground; panel presence must be tested
+       per location against the imagery. The lattice claimed 52.4% coverage
+       against a 43.9% imagery dark fraction.
+  `--overlay` renders the detection on the imagery. All three faults were
+  found by eye there, not in the numbers — always look before trusting a run.
+  Output is committed so downstream steps and tests need no imagery.
+- `scripts/heat_risk.py` — ties it together: submits one heatmap request,
+  loads the detected rows, splits each row where it crosses a tile boundary so
+  every scored segment lies inside exactly one tile, and flags segments
+  against a site-relative percentile cutoff (a rough proxy — it ranks
+  exceedance-hours within the site, not a validated panel damage spec).
+  `at_risk` is three-state: segments with no covering tile are `null`
+  (unknown), never `false`. Do not go back to matching a row centroid to a
+  tile: rows run up to ~330 m against 60 m tiles, so that used 21 of 176
+  tiles and clipped the site's true 1.98-3.11 h range to 2.51-2.98 h. The
+  percentile basis is row-in-tile segments, and every label must say so —
+  tile-weighting gives a materially different cutoff.
+- `scripts/geo_utils.py` — local equirectangular lon/lat <-> meters projection,
   accurate enough at single-site scale (~1km).
+- Panel temperature / power-loss modelling was removed deliberately (issue #1):
+  the question is "which areas run hotter than the rest", which does not need
+  it. Do not add it back without asking.
 
 ## FortyGuard API gotchas (confirmed by live testing)
 
