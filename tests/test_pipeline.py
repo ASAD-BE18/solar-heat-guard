@@ -358,6 +358,47 @@ def test_committed_row_geometry_matches_the_defaults():
     assert parser_defaults["row_offset"] == measured["offset_m"]
 
 
+def test_committed_heat_risk_output_is_self_consistent():
+    """The output's own metadata must agree with its features -- this is the
+    file the demo and the README both quote from."""
+    fc = json.loads((ROOT / "data" / "geojson" / "solar_form_2_heat_risk.geojson").read_text())
+    md, feats = fc["metadata"], fc["features"]
+    states = [f["properties"]["at_risk"] for f in feats]
+
+    assert md["n_rows"] == len(feats)
+    assert md["n_at_risk"] == states.count(True)
+    assert md["n_no_data"] == sum(1 for v in states if v is None)
+    assert md["n_scored"] == md["n_rows"] - md["n_no_data"]
+    assert md["percentile_basis"] == "rows"
+
+    for f in feats:
+        p = f["properties"]
+        # no-data and scored must be exactly complementary -- the original bug
+        # was a row with no tile_value still reporting a boolean verdict.
+        assert (p["tile_value"] is None) == (p["at_risk"] is None)
+        assert (p["tile_id"] is None) == (p["at_risk"] is None)
+
+
+def test_committed_output_matches_the_geometry_it_records():
+    """Guards against the output drifting from the row geometry in its own
+    metadata -- the class of staleness this review found."""
+    fc = json.loads((ROOT / "data" / "geojson" / "solar_form_2_heat_risk.geojson").read_text())
+    md = fc["metadata"]
+    site = shape(json.loads(SITE_PATH.read_text())["features"][0]["geometry"])
+    rows = generate_rows(site, md["row_pitch_m"], md["row_width_m"],
+                         md["row_orientation_deg"], md["row_offset_m"])
+    assert len(rows) == md["n_rows"]
+
+
+def test_docs_data_js_matches_the_committed_output():
+    """docs/data.js is a hand-run build step, so it can silently fall behind
+    the GeoJSON it is supposed to bundle."""
+    text = (ROOT / "docs" / "data.js").read_text()
+    bundled = json.loads(text.split("const PANEL_ROWS = ", 1)[1].strip().rstrip(";"))
+    committed = json.loads((ROOT / "data" / "geojson" / "solar_form_2_heat_risk.geojson").read_text())
+    assert bundled == committed
+
+
 def _heat_risk_parser():
     import argparse
     import contextlib

@@ -158,15 +158,11 @@ than this site's own typical temperature." A too-high threshold (we tried
 useful for hotspot detection.
 
 **Real result on `2024-07-15`, 06:00-18:00, granularity 60m:** tile
-exceedance-hours (above 35.5°C) ranged 1.98-3.11 across 176 tiles. Of the
-152 generated rows, 146 fell inside a returned tile; across those scored rows
-the values ranged 2.51-3.03 and the row-weighted top-quartile cutoff was 2.72
-hours -- **47/146 scored rows (32%) flagged as recurring hotspots**, with 6
-rows reported as unknown (no covering tile).
-
-> These figures are from the run committed *before* the row-geometry phase fix
-> and the sliver filter landed, so the row set differs slightly from what the
-> current code generates. Re-run to refresh them.
+exceedance-hours (above 35.5°C) ranged 1.98-3.11 across 176 tiles. Of the 151
+generated rows, 146 fell inside a returned tile, spread over 21 distinct tiles;
+across those scored rows the values ranged 2.51-3.11 and the row-weighted
+top-quartile cutoff was 2.72 hours -- **46/146 scored rows (32%) flagged as
+recurring hotspots**, with 5 rows reported as unknown (no covering tile).
 
 **Real result with `--pv-model` on `2024-07-15` at 14:00:** ambient ~35.5°C +
 GHI ~864 W/m² -> modeled cell temperature ~61.4°C -> ~13.8% estimated power
@@ -218,12 +214,12 @@ changes: `python scripts/measure_row_geometry.py data/geojson/solar_form_2.geojs
 
 Rows sit 5.38 m apart; FortyGuard's finest heatmap granularity is 60 m. About
 eleven rows therefore share every tile, and on the committed run 146 scored
-rows were coloured from just **22 distinct tile values**. The per-row map is a
+rows were coloured from just **21 distinct tiles**. The per-row map is a
 presentation of tile-resolution data at row resolution -- neighbouring rows
 usually share one measurement rather than each carrying its own.
 
 This is also why the percentile is row-weighted rather than tile-weighted: on
-the committed run the row-weighted p75 cutoff was 2.72 hours against 2.87 for
+the committed run the row-weighted p75 cutoff was 2.72 hours against 2.90 for
 a distinct-tile p75. Row-weighting is the right question for a ranked
 inspection list, but the two are not interchangeable, so every label states
 which is in use. The map says so on its own face.
