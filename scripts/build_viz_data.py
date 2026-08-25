@@ -22,7 +22,7 @@ def main():
     out_path = DOCS_DIR / "data.js"
     out_path.write_text(
         "const SITE_BOUNDARY = " + json.dumps(site) + ";\n"
-        "const PANEL_ROWS = " + json.dumps(heat_risk) + ";\n"
+        "const ROW_SEGMENTS = " + json.dumps(heat_risk) + ";\n"
     )
     print(f"wrote {out_path}")
 
