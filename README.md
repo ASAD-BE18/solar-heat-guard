@@ -1,21 +1,28 @@
 # solar-heat-guard
 
-A FortyGuard hackathon entry: flag which rows of a solar farm are at elevated
-heat-damage risk, using [FortyGuard](https://www.fortyguard.com)'s hyperlocal
-Temperature API.
+A FortyGuard hackathon entry: a **ranked heat-exposure map** for a solar
+farm, using [FortyGuard](https://www.fortyguard.com)'s hyperlocal Temperature
+API to answer not "where is it hot?" but **"where should the operator look
+first?"**
 
 **Site:** a utility-scale solar farm at 293 Mendel Rd, Fort Stockton, TX 79735.
 
 ## Why
 
-Extended heat exposure accelerates degradation. Rather than assuming an
-absolute "damage" temperature (which is hard to pin down and easy to get
-wrong), this project asks a site-relative question instead: **which zones of
-this array consistently run hotter than the rest of the site?** It pulls
-FortyGuard's per-tile temperature/exceedance-hours data, overlays it against
-the array's actual row layout, and flags rows in the top quartile of this
-site's own tiles -- a self-calibrating hotspot signal an operator could use
-to prioritize inspections, rather than a site-wide "it's hot today."
+Utility-scale solar farms are large enough that operators can't tell, from a
+single site-wide reading, where heat exposure is unusually high and
+persistent -- making it hard to prioritize limited inspection, sensor, and
+maintenance resources (see issue #2 for the full business case). Rather than
+assuming an absolute "damage" temperature (which is hard to pin down and
+easy to get wrong), this project asks a site-relative question instead:
+**which zones of this array consistently run hotter than the rest of the
+site?** It pulls FortyGuard's per-tile temperature/exceedance-hours data,
+overlays it against the array's actual row layout, and ranks rows against
+this site's own baseline -- flagging the top quartile as hotspots an
+operator could prioritize for inspection, rather than a site-wide "it's hot
+today." The same signal is a foundation for a broader risk system later,
+combining heat exposure with SCADA/equipment/maintenance data to confirm
+whether a hotspot maps to an actual operational issue.
 
 (An earlier direction estimated actual panel cell temperature and % power
 loss via a NOCT thermal model -- see `--pv-model` below. Still available,
