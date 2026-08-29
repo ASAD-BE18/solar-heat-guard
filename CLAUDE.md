@@ -3,8 +3,13 @@
 FortyGuard hackathon entry: detect which parts of a solar farm are at elevated
 heat-damage risk, using FortyGuard's Temperature API.
 
-Target site: a utility-scale solar farm at 293 Mendel Rd, Fort Stockton, TX
-79735 (`data/kml/solar_form_2.kml`).
+Target sites: six utility-scale solar farms around 293 Mendel Rd, Fort
+Stockton, TX 79735 (`data/kml/solar_farm_{1..6}.kml`). Farm 1 is the original
+site; 2-6 were added later from a Google Earth export. The KML placemarks were
+named inconsistently ("solar farm 2", "solar form 4", "form 6") and numbered
+from 2; both were normalised, so the id, the filename and the label all agree.
+Five farms resolve; farm 5's tiles come back with a single value and the run
+is refused rather than published.
 
 ## Setup
 
@@ -18,9 +23,9 @@ cp .env.example .env   # fill in FORTYGUARD_API_KEY
 
 ```
 python scripts/kml_to_geojson.py                 # data/kml/*.kml -> data/geojson/*.geojson
-python scripts/detect_panel_rows.py data/geojson/solar_form_2.geojson --overlay /tmp/rows.png
-python scripts/heat_risk.py data/geojson/solar_form_2.geojson --date YYYY-MM-DD     --start-time 06:00 --end-time 18:00 --granularity 60
-python scripts/build_viz_data.py data/geojson/solar_form_2.geojson     data/geojson/solar_form_2_heat_risk.geojson
+python scripts/detect_panel_rows.py data/geojson/solar_farm_N.geojson --overlay /tmp/rows.png
+python scripts/heat_risk.py data/geojson/solar_farm_1.geojson --date YYYY-MM-DD     --start-time 06:00 --end-time 18:00 --granularity 60
+python scripts/build_viz_data.py                  # every site with a heat-risk output
 python -m pytest tests/ -q                       # offline; no API, no imagery
 ```
 
@@ -45,7 +50,14 @@ python -m pytest tests/ -q                       # offline; no API, no imagery
     2. **Never fit pitch/width/phase before the bearing.** A tilt smears the
        profile and biases both (5.38/2.82 vs 5.63/2.56). Weak autocorrelation
        (0.34) was the tell and was ignored.
-    3. **Never extrapolate a lattice across the site polygon.** The boundary
+    3. **Rows do not all run north-south.** The scan shears by tan(bearing),
+       so it reaches only angles near the scanline axis; farms 3 and 4 run
+       east-west and were silently fitted to their 400 m block structure
+       (contrast 0.20 and 0.15 against 0.92 for a real fit). Both
+       orientations are scanned now -- the transposed mask covers east-west
+       -- and the higher contrast wins. Never widen `limit_deg` instead:
+       tan blows up toward 90 deg.
+    4. **Never extrapolate a lattice across the site polygon.** The boundary
        is hand-drawn and contains bare ground; panel presence must be tested
        per location against the imagery. The lattice claimed 52.4% coverage
        against a 43.9% imagery dark fraction.
@@ -63,6 +75,17 @@ python -m pytest tests/ -q                       # offline; no API, no imagery
   tiles and clipped the site's true 1.98-3.11 h range to 2.51-2.98 h. The
   percentile basis is row-in-tile segments, and every label must say so —
   tile-weighting gives a materially different cutoff.
+  `--threshold` defaults to `auto`: one extra `tcm` request measures this
+  site's own temperature for the same window and the mean of the tiles'
+  **peak** (`max_temperature`) becomes the threshold, so no run carries a
+  hand-picked number. Calibrate on the peak, never the window mean --
+  exceedance counts hours above the threshold, so the threshold has to sit
+  where the diurnal curve is flat. Measured on farm 4, 2025-07-15: the
+  window mean (29.09 C) sits on the morning ramp and returned exactly
+  7.00 h for every tile; the mean of peaks (34.18 C) returned -0.10 to
+  0.40. Negative means that spot never reached the threshold -- FortyGuard
+  interpolates the curve and reports the shortfall rather than clamping.
+  A run whose scored values are all identical is refused, not published.
   The AOI is buffered (`--aoi-buffer`, default 600 m) before the request:
   FortyGuard returns whole grid cells and drops the ones the AOI only
   partly covers, so the unbuffered run's mosaic stopped 147 m short of the

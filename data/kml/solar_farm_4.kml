@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document id="KmlFile">
-	<gx:CascadingStyle kml:id="__managed_style_01B789EA794163B05DA4_highlight">
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_highlight">
 		<Style>
 			<IconStyle>
 				<scale>1.2</scale>
@@ -23,7 +23,7 @@
 			</BalloonStyle>
 		</Style>
 	</gx:CascadingStyle>
-	<gx:CascadingStyle kml:id="__managed_style_01B789EA794163B05DA4_normal">
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_normal">
 		<Style>
 			<IconStyle>
 				<Icon>
@@ -44,34 +44,34 @@
 			</BalloonStyle>
 		</Style>
 	</gx:CascadingStyle>
-	<StyleMap id="__managed_style_01B789EA794163B05DA4">
+	<StyleMap id="__managed_style_0E4F3663AB4181FD4AB3">
 		<Pair>
 			<key>normal</key>
-			<styleUrl>#__managed_style_01B789EA794163B05DA4_normal</styleUrl>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_normal</styleUrl>
 		</Pair>
 		<Pair>
 			<key>highlight</key>
-			<styleUrl>#__managed_style_01B789EA794163B05DA4_highlight</styleUrl>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_highlight</styleUrl>
 		</Pair>
 	</StyleMap>
-	<Placemark id="06F7D650FD41631E555F">
-		<name>solar form 2</name>
+	<Placemark id="06FB9A10944173581804">
+		<name>Solar farm 4</name>
 		<LookAt>
-			<longitude>-103.2792447883044</longitude>
-			<latitude>30.96276407944724</latitude>
-			<altitude>912.4189343978527</altitude>
-			<heading>0</heading>
+			<longitude>-103.34992871311</longitude>
+			<latitude>30.96497752588792</latitude>
+			<altitude>935.5866510168374</altitude>
+			<heading>359.9999692465635</heading>
 			<tilt>0</tilt>
-			<gx:fovy>35</gx:fovy>
-			<range>1754.998181640404</range>
+			<gx:fovy>30.00000001</gx:fovy>
+			<range>1740.230342432333</range>
 			<altitudeMode>absolute</altitudeMode>
 		</LookAt>
-		<styleUrl>#__managed_style_01B789EA794163B05DA4</styleUrl>
+		<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3</styleUrl>
 		<Polygon>
 			<outerBoundaryIs>
 				<LinearRing>
 					<coordinates>
-						-103.283682611912,30.95508179384805,0 -103.2803251397605,30.95516203469824,0 -103.2803384634061,30.95589443686132,0 -103.2788442442408,30.95594777553583,0 -103.2788706641464,30.95745490351109,0 -103.2772955916977,30.95753066657571,0 -103.2772980221608,30.95828409439121,0 -103.2755964564287,30.95831190183382,0 -103.2757789320477,30.96447870708024,0 -103.2775133133041,30.96445958221792,0 -103.277484059842,30.9637139370444,0 -103.2805624133435,30.96363499123651,0 -103.280575964064,30.96440659679552,0 -103.2840458058942,30.96433700400671,0 -103.283682611912,30.95508179384805,0
+						-103.3491402631615,30.96195588739009,0 -103.3492026376512,30.96544227674822,0 -103.3539373174661,30.96541611656017,0 -103.3539091485644,30.96191166165172,0 -103.3491402631615,30.96195588739009,0 
 					</coordinates>
 				</LinearRing>
 			</outerBoundaryIs>

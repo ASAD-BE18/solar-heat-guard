@@ -24,9 +24,9 @@ import satellite_tiles as st
 from fortyguard_client import FortyGuardClient
 from geo_utils import make_projector
 
-SITE_PATH = ROOT / "data" / "geojson" / "solar_form_2.geojson"
-PANEL_ROWS_PATH = ROOT / "data" / "geojson" / "solar_form_2_panel_rows.geojson"
-HEAT_RISK_PATH = ROOT / "data" / "geojson" / "solar_form_2_heat_risk.geojson"
+SITE_PATH = ROOT / "data" / "geojson" / "solar_farm_1.geojson"
+PANEL_ROWS_PATH = ROOT / "data" / "geojson" / "solar_farm_1_panel_rows.geojson"
+HEAT_RISK_PATH = ROOT / "data" / "geojson" / "solar_farm_1_heat_risk.geojson"
 ZOOM = 19
 
 
@@ -310,6 +310,85 @@ def test_detect_refuses_featureless_imagery(monkeypatch, small_site):
 
     with pytest.raises(ValueError, match="no panel rows found"):
         detect.detect(small_site, zoom=ZOOM, bearing_deg=0.0, verbose=False)
+
+
+# --- heat_risk: threshold calibration ---------------------------------------
+
+class _StubClient:
+    """Stands in for FortyGuardClient so calibration is testable offline."""
+    def __init__(self, tiles):
+        self.tiles = tiles
+        self.payloads = []
+
+    @staticmethod
+    def heatmap_payload(**kwargs):
+        return kwargs
+
+    def run(self, endpoint, payload, *a, **kw):
+        self.payloads.append(payload)
+        return {"map_data": {"type": "FeatureCollection", "features": self.tiles}}
+
+
+def _temp_tile(tile_id, x0, y0, size, temperature):
+    return {"type": "Feature",
+            "properties": {"tile_id": tile_id, "average_temperature": temperature},
+            "geometry": mapping(box(x0, y0, x0 + size, y0 + size))}
+
+
+def test_calibration_averages_only_tiles_that_cover_the_site():
+    """The request AOI is buffered, so most returned tiles are ground the
+    operator does not own -- averaging them in would drag the site's own
+    reference temperature toward the surrounding desert."""
+    site = box(0, 0, 2, 2)
+    tiles = [_temp_tile(0, 0, 0, 1, 30.0), _temp_tile(1, 1, 1, 1, 34.0),
+             _temp_tile(2, 50, 50, 1, 99.0)]  # far outside the site
+    client = _StubClient(tiles)
+    threshold, n, _ = heat_risk.calibrate_threshold(client, {"features": []}, {}, 60, site)
+    assert n == 2
+    assert threshold == pytest.approx(32.0)
+
+
+def test_calibration_uses_the_peak_not_the_mean():
+    """Exceedance counts hours above the threshold, so the threshold has to sit
+    where the diurnal curve is flat. Calibrating on the window mean put it on
+    the morning ramp and every tile came back at exactly 7.00 h."""
+    site = box(0, 0, 2, 2)
+    tiles = [{"type": "Feature",
+              "properties": {"tile_id": 0, "average_temperature": 29.1,
+                             "min_temperature": 21.0, "max_temperature": 34.2},
+              "geometry": mapping(box(0, 0, 1, 1))}]
+    threshold, _, field = heat_risk.calibrate_threshold(
+        _StubClient(tiles), {"features": []}, {}, 60, site)
+    assert field == "max_temperature"
+    assert threshold == pytest.approx(34.2)
+
+
+def test_calibration_asks_for_tcm_not_the_scored_analytic():
+    site = box(0, 0, 2, 2)
+    client = _StubClient([_temp_tile(0, 0, 0, 1, 33.0)])
+    heat_risk.calibrate_threshold(client, {"features": []}, {"start_date": "2025-07-15"}, 60, site)
+    assert client.payloads[0]["analytic_type"] == "tcm"
+
+
+def test_calibration_refuses_a_date_with_no_tiles():
+    client = _StubClient([])
+    with pytest.raises(Exception, match="0 tiles"):
+        heat_risk.calibrate_threshold(client, {"features": []}, {}, 60, box(0, 0, 1, 1))
+
+
+# --- heat_risk: degenerate distributions ------------------------------------
+
+def test_classification_flags_nothing_when_the_field_is_constant():
+    """A percentile of a constant field is that constant, and >= it is true
+    for every segment -- the 2026-07-15 probe flagged 622 of 622 that way.
+    classify() itself is inclusive by design, so main() has to refuse the run;
+    this pins the arithmetic that makes it degenerate."""
+    values = [0.0] * 50
+    assert max(values) == min(values)
+    assert float(np.percentile(values, 75.0)) == 0.0
+    segments = [{"geometry": box(0, 0, 1, 1), "row_index": 0, "tile_id": 1, "value": 0.0}]
+    results = heat_risk.classify(segments, "value", 0.0)
+    assert results[0]["properties"]["at_risk"] is True  # why it must be caught upstream
 
 
 # --- heat_risk: AOI buffering -----------------------------------------------
@@ -691,13 +770,21 @@ def test_committed_output_has_no_unscored_segment_left():
 
 
 def test_committed_output_spans_the_full_tile_range():
-    """Centroid lookup silently clipped the site's true 1.98-3.11 h range to
-    2.51-2.98 h. The scored segments must reach both ends again."""
+    """Centroid lookup silently clipped the site's range by scoring every row
+    from a narrow band of tiles. Stated without hardcoding a date's numbers:
+    the extremes must come from different tiles, and the spread must be real --
+    the absolute values move with --date and the calibrated threshold."""
     fc = json.loads(HEAT_RISK_PATH.read_text())
-    values = [f["properties"]["tile_value"] for f in fc["features"]
-              if f["properties"]["tile_value"] is not None]
-    assert min(values) < 2.0
-    assert max(values) > 3.1
+    scored = [f["properties"] for f in fc["features"] if f["properties"]["tile_value"] is not None]
+    values = [p["tile_value"] for p in scored]
+    assert max(values) > min(values), "a constant field cannot be ranked"
+    lowest = min(scored, key=lambda p: p["tile_value"])
+    highest = max(scored, key=lambda p: p["tile_value"])
+    assert lowest["tile_id"] != highest["tile_id"]
+    # Every tile that holds rows contributes its own value, so the output must
+    # show as many distinct values as it does tiles, give or take exact ties.
+    md = fc["metadata"]
+    assert len(set(values)) >= 0.5 * md["n_tiles_with_rows"]
 
 
 def test_committed_output_matches_the_detection_it_records():
@@ -724,9 +811,31 @@ def test_committed_percentile_cutoff_matches_the_features():
             assert p["at_risk"] == (p["tile_value"] >= md["percentile_cutoff"])
 
 
-def test_docs_data_js_matches_the_committed_output():
-    """docs/data.js is a hand-run build step, so it can silently fall behind
-    the GeoJSON it is supposed to bundle."""
-    text = (ROOT / "docs" / "data.js").read_text()
-    bundled = json.loads(text.split("const ROW_SEGMENTS = ", 1)[1].strip().rstrip(";"))
-    assert bundled == json.loads(HEAT_RISK_PATH.read_text())
+def test_docs_bundle_matches_every_committed_output():
+    """The docs/ bundle is a hand-run build step, so it can silently fall
+    behind the GeoJSON it is supposed to carry -- for any of the sites."""
+    import build_viz_data
+
+    outputs = sorted((ROOT / "data" / "geojson").glob("*_heat_risk.geojson"))
+    assert outputs, "no heat-risk outputs committed"
+    for heat_path in outputs:
+        site_id = heat_path.name.replace("_heat_risk.geojson", "")
+        bundle = ROOT / "docs" / ("site_" + site_id + ".js")
+        assert bundle.exists(), bundle.name + " missing -- re-run build_viz_data.py"
+        payload = bundle.read_text().split("= ", 1)[1].strip().rstrip(";")
+        bundled = json.loads(payload)
+        expected = build_viz_data.round_coords(json.loads(heat_path.read_text()))
+        assert bundled["segments"] == expected, bundle.name + " is stale"
+
+
+def test_docs_site_index_lists_every_bundled_site():
+    """The page loads sites.js first and lazy-loads from it; a site missing
+    from the index is invisible however good its data is."""
+    text = (ROOT / "docs" / "sites.js").read_text()
+    payload = text.split("const SITES = ", 1)[1].rsplit(";", 2)[0].strip().rstrip(";")
+    index = json.loads(payload)
+    listed = {s["id"] for s in index}
+    bundled = {p.name[len("site_"):-len(".js")] for p in (ROOT / "docs").glob("site_*.js")}
+    assert listed == bundled
+    for site in index:
+        assert site["name"] and site["bounds"] and site["date"]

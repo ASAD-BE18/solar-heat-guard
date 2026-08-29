@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="KmlFile">
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_highlight">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4.8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_normal">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3.2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0E4F3663AB4181FD4AB3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="0816A2CE874173524876">
+		<name>Solar farm 2</name>
+		<LookAt>
+			<longitude>-103.2902916941147</longitude>
+			<latitude>30.97936942113591</latitude>
+			<altitude>908.1161028347377</altitude>
+			<heading>359.9999581165911</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00000001</gx:fovy>
+			<range>972.9479679788346</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-103.2930673675196,30.98084697745228,0 -103.2928262858387,30.97317727835834,0 -103.2895674345346,30.97327827084879,0 -103.2894902162152,30.97175284255922,0 -103.2813713224905,30.97194125811049,0 -103.2816239579903,30.98110604709024,0 -103.2930673675196,30.98084697745228,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>

@@ -97,7 +97,7 @@ Dependencies are pinned. For the test suite:
 
 ```bash
 ./.venv/Scripts/pip install -r requirements-dev.txt
-./.venv/Scripts/python -m pytest tests/ -q     # 54 tests, fully offline
+./.venv/Scripts/python -m pytest tests/ -q     # 60 tests, fully offline
 ```
 
 ## Usage
@@ -109,16 +109,15 @@ python scripts/kml_to_geojson.py
 # 2. Detect the panel rows from satellite imagery (no FortyGuard quota;
 #    imagery tiles are cached on disk). --overlay renders the detection over
 #    the imagery so you can check the fit by eye.
-python scripts/detect_panel_rows.py data/geojson/solar_form_2.geojson \
+python scripts/detect_panel_rows.py data/geojson/solar_farm_1.geojson \
     --overlay /tmp/rows.png
 
 # 3. Rank heat exposure for a given date
-python scripts/heat_risk.py data/geojson/solar_form_2.geojson \
+python scripts/heat_risk.py data/geojson/solar_farm_1.geojson \
     --date 2024-07-15 --start-time 06:00 --end-time 18:00 --granularity 60
 
-# 4. Bundle the result into the Leaflet map
-python scripts/build_viz_data.py data/geojson/solar_form_2.geojson \
-    data/geojson/solar_form_2_heat_risk.geojson
+# 4. Bundle every site that has a result into the Leaflet map
+python scripts/build_viz_data.py
 ```
 
 Step 2 is run explicitly and its output is committed, so steps 3-4 and the
@@ -165,22 +164,54 @@ dates (e.g. "yesterday") can return zero tiles even though the request
 succeeds. `2024-07-15` is confirmed to return real data; prefer dates that
 are safely in the past over "today"/"yesterday".
 
-**Picking `--threshold`:** set it to the site's own measured average
-temperature for the window, not an arbitrary number -- e.g. on `2024-07-15`
-this site's ambient temperature (`tcm`) measured ~35.5°C at 14:00, so
-`--threshold 35.5` turns "exceedance" into "hours running hotter than this
-site's own typical temperature." A too-high threshold (we tried 40°C) returns
-0 hours for every tile -- a real result, not a bug, but not useful for
-hotspot detection.
+**`--threshold` is measured, not chosen.** It defaults to `auto`: the run
+spends one extra `tcm` request on the same AOI and window, and takes the mean
+of the covering tiles' **peak** (`max_temperature`) as the threshold. So no
+result carries a hand-picked number, and "exceedance" means "hours this spot
+ran hotter than this site's own typical daily peak."
 
-**Real result on `2024-07-15`, 06:00-18:00, granularity 60 m, `--aoi-buffer
-600`:** FortyGuard returned 1,040 tiles with exceedance-hours (above 35.5°C)
-ranging 1.88-3.11; 213 of them contain panel rows, the rest being the buffer
-margin outside the site. The 1,244 detected panel-row runs split into **2,952
-row-in-tile segments, every one of them inside a returned tile** — no unknown
-segments left, against 173 on the unbuffered run. The top-quartile cutoff was
-2.98 hours: **750 of 2,952 scored segments (25%) flagged as hotspots, covering
-7.14 ha of the 27.78 ha of scored panel area (26%)**.
+Calibrate on the peak, never the window mean. Exceedance counts hours above
+the threshold, so the threshold has to sit where the diurnal curve is flat for
+a small spatial temperature difference to move the crossing time at all.
+Measured on farm 4, `2025-07-15`: the window mean (29.09°C) sits on the
+morning ramp, where the 0.07°C of spatial spread shifts the crossing by
+seconds -- every tile returned **exactly 7.00 hours**, a perfectly flat map.
+The mean of the tiles' own peaks (34.18°C) returned -0.10 to 0.40 and split
+the site cleanly.
+
+Negative values are not a bug: FortyGuard interpolates the diurnal curve, so a
+tile whose peak never reaches the threshold reports how far short it fell
+rather than clamping to zero. Calibrating at the site's median peak puts
+roughly half the site on each side, which is what makes the ranking
+discriminate.
+
+**A run whose scored values are all identical is refused, not published.** A
+percentile of a constant field is that same constant, and every segment then
+clears it -- "100% of this farm is a hotspot" is not a finding, it is a
+degenerate comparison. That check is what caught the 7.00-hours calibration
+above, and the `2026-07-15` probe before it.
+
+**Real result: five farms on `2025-07-15`, 06:00-18:00, granularity 60 m,
+`--aoi-buffer 600`, threshold auto-calibrated per site.**
+
+| farm | rows | threshold | tiles returned | tiles with rows | segments | flagged | hotspot area |
+|---|---|---|---|---|---|---|---|
+| 1 | N-S | 34.46 C | 1,040 | 213 | 2,952 | 750 | 7.14 / 27.78 ha |
+| 2 | N-S | 34.54 C | 1,330 | 319 | 4,680 | 1,178 | 11.64 / 46.52 ha |
+| 3 | E-W | 34.17 C | 1,022 | 205 | 2,446 | 622 | 9.91 / 45.32 ha |
+| 4 | E-W | 34.18 C | 727 | 56 | 622 | 163 | 3.62 / 12.85 ha |
+| 5 | N-S | -- | 948 | 81 | -- | **refused** | flat field, see limitations |
+| 6 | N-S | 34.38 C | 2,390 | 636 | 9,335 | 2,356 | 23.20 / 90.89 ha |
+
+**20,035 row-in-tile segments across the five resolved farms, 5,069 flagged as
+hotspots, 55.51 ha of 223.36 ha of scored panel area -- and zero segments
+without data on any of them.** The AOI buffer holds across every site: before
+it, farm 1 alone lost 9.4% of its area to uncovered ground.
+
+Farm 5 is not a gap in the pipeline, it is the pipeline refusing to publish:
+every tile under it came back with the same value, so there was nothing to
+rank. See "Known limitations" -- and read the date-stability entry there
+before presenting any of these numbers as an operational output.
 
 ## How panel rows are detected
 
@@ -194,6 +225,16 @@ Everything below hangs off that separation.
 sheared so rows would lie at constant across-row position, and the resulting
 profile is scored by `p90 - p10` of its dark fraction. At the right angle a
 row line reads 94% dark and a gap 2%; at a wrong one both smear together.
+
+Both orientations are scanned, because rows do not all run north-south: in
+this cluster farms 1, 2, 5 and 6 do, while **farms 3 and 4 run east-west**.
+The shear is by `tan(bearing)`, which blows up toward 90 deg, so east-west is
+reached by scanning the transposed mask rather than by widening the angle
+limit; whichever gives the higher contrast wins. It is not a close call --
+0.92 against 0.20 on farm 3, 0.97 against 0.15 on farm 4. Fitted at the wrong
+orientation, farm 3 came back as 3 "rows" 397 m apart and 123 m wide -- its
+400 m block structure -- and claimed 88.3% panel coverage against a 72.8%
+imagery dark fraction.
 
 **2. Pitch, width, centre lines.** At the chosen bearing, the profile's dark
 runs *are* the rows. Their centres and widths are read off directly rather
@@ -301,6 +342,34 @@ a tile-weighted cutoff still differs.
 - **Some segments have no data.** Segments covered by no returned tile are
   reported `at_risk: null` and rendered grey -- unknown, not cleared. They are
   excluded from the percentile and from the at-risk denominator.
+- **The date-to-date behaviour of the metric is not understood, and the two
+  sites tested disagree with each other.** Both were run on `2024-07-15` and
+  `2025-07-15`, same window, same auto-calibration:
+
+  | | farm 1 | farm 3 |
+  |---|---|---|
+  | difference between the two dates | **exactly 2.000000 h everywhere** (std 0.00000000, 1 distinct value over 213 tiles) | varies: -0.10 to +1.33, std 0.359, 202 distinct values |
+  | rank correlation | **+1.0000** | **-0.7560** |
+  | flagged segments in common | all 750 (identical set) | **0 of ~620** |
+
+  Farm 1 behaves as one spatial layer with a constant level shift -- two
+  independent days of weather cannot differ with zero variance to six decimal
+  places. Farm 3 behaves as though the pattern *inverted* between the two
+  dates. Both cannot be right, so **treat the day-to-day ranking as
+  unvalidated**: it is reproducible for a given date, but which rows it flags
+  is not stable across dates in a way we can currently explain, and on farm 3
+  it is not stable at all. What would settle it: a third date per site, and a
+  direct check of whether FortyGuard's `value` field for `exceedance` means
+  the same thing on both sides of the threshold (negative values are returned
+  when a tile never reaches it). Neither has been done.
+
+  This is the single biggest open question in the project. Do not present the
+  per-date map as a validated operational output until it is resolved.
+- **One site in this cluster could not be resolved at all.** Farm 5's tiles
+  came back with a single distinct value across the whole site, so there was
+  nothing to rank and the run was **refused** rather than published. That is
+  the degenerate-field check doing its job; the alternative would have been a
+  map flagging 100% of the farm as a hotspot.
 - **The hotspot cutoff reflects one day, not sustained recurrence.** "Runs
   consistently hotter" implies persistence across multiple days; the current
   demo uses a single representative day (FortyGuard's 30 heatmap
@@ -331,5 +400,5 @@ scripts/
   fortyguard_client.py FortyGuard API client (heatmap, polling, result caching,
                       429/5xx retry with backoff)
   heat_risk.py        End-to-end: heatmap + detected rows -> ranked segments
-  build_viz_data.py   Bundles the output into docs/data.js for the Leaflet map
+  build_viz_data.py   Bundles each site into docs/site_<id>.js + docs/sites.js
 ```

@@ -2,6 +2,8 @@
   "type": "FeatureCollection",
   "metadata": {
     "bearing_deg": -1.51,
+    "row_axis": "north-south",
+    "scan_bearing_deg": -1.51,
     "profile_contrast": 0.9211,
     "pitch_m": 5.633,
     "row_width_m": 2.56,

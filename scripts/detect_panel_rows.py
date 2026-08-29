@@ -269,12 +269,16 @@ def merge_kept_bins(bounds, keep):
     return [tuple(e) for e in extents]
 
 
-def extent_to_polygon(centre, half_width, y0, y1, shift, tile_x0, tile_y0, zoom):
+def extent_to_polygon(centre, half_width, y0, y1, shift, tile_x0, tile_y0, zoom,
+                      transposed=False):
     """Convert one along-row extent into a lon/lat quadrilateral.
 
     The row's edges are straight lines in pixel space, so the four corners
     fully describe it; converting the corners rather than the whole outline
     keeps the tilt exact.
+
+    transposed=True means the detection ran on a transposed mask (east-west
+    rows), so pixel (x, y) has to be swapped back before conversion.
     """
     y_last = min(y1, len(shift) - 1)
     corners_px = [
@@ -283,6 +287,8 @@ def extent_to_polygon(centre, half_width, y0, y1, shift, tile_x0, tile_y0, zoom)
         (centre + shift[y_last] + half_width, y1),
         (centre + shift[y_last] - half_width, y1),
     ]
+    if transposed:
+        corners_px = [(py, px) for px, py in corners_px]
     ring = [st.pixel_to_lonlat(px, py, tile_x0, tile_y0, zoom) for px, py in corners_px]
     return shape({"type": "Polygon", "coordinates": [ring + [ring[0]]]})
 
@@ -309,13 +315,31 @@ def detect(site_polygon, zoom=19, panel_threshold=DEFAULT_PANEL_THRESHOLD,
     imagery_dark_fraction = float(panel_mask.sum() / inside_mask.sum())
     mpp = meters_per_pixel(site_polygon.centroid.y, zoom)
 
+    # The scan shears by tan(bearing), so it can only reach angles near the
+    # scanline axis -- it cannot find rows that run east-west. Those sites are
+    # reached by scanning the transposed mask instead, and the two are told
+    # apart the same way every other geometry question here is: whichever
+    # gives the higher across-row profile contrast wins. On this cluster the
+    # margin is unambiguous (0.92 vs 0.20, 0.97 vs 0.15), never a close call.
+    transposed = False
     if bearing_deg is None:
         bearing_deg, contrast = estimate_bearing(panel_mask, inside_mask)
+        across_bearing, across_contrast = estimate_bearing(panel_mask.T, inside_mask.T)
+        if across_contrast > contrast:
+            transposed = True
+            bearing_deg, contrast = across_bearing, across_contrast
     else:
         profile, _ = across_row_profile(panel_mask, inside_mask, bearing_deg)
         contrast = profile_contrast(profile)
+
+    if transposed:
+        panel_mask, inside_mask = panel_mask.T, inside_mask.T
+    # Reported north-relative: a transposed scan measures its angle off east.
+    true_bearing_deg = (90.0 - bearing_deg) if transposed else bearing_deg
     if verbose:
-        print(f"bearing: {bearing_deg:+.2f} deg from grid north (profile contrast {contrast:.3f})")
+        print(f"rows run {'east-west' if transposed else 'north-south'}; "
+              f"bearing {true_bearing_deg:+.2f} deg from grid north "
+              f"(profile contrast {contrast:.3f})")
 
     profile, origin = across_row_profile(panel_mask, inside_mask, bearing_deg)
     runs = dark_runs(profile, min_dark_fraction)
@@ -327,6 +351,12 @@ def detect(site_polygon, zoom=19, panel_threshold=DEFAULT_PANEL_THRESHOLD,
     centres = [(start + end - 1) / 2.0 - origin for start, end in runs]
     widths_px = [end - start for start, end in runs]
     pitch_px = measure_pitch(centres)
+    if pitch_px is None:
+        raise ValueError(
+            f"only {len(centres)} row centre line(s) found at bearing "
+            f"{true_bearing_deg:+.2f} deg (profile contrast {contrast:.3f}) -- too few to "
+            f"measure a pitch. A contrast below ~0.5 means no row structure was found at "
+            f"all; check --panel-threshold and --overlay before trusting any of it.")
     median_width_px = float(np.median(widths_px))
     if verbose:
         print(f"detected {len(centres)} row centre lines; "
@@ -352,7 +382,7 @@ def detect(site_polygon, zoom=19, panel_threshold=DEFAULT_PANEL_THRESHOLD,
 
         for y0, y1 in merge_kept_bins(bounds, keep):
             polygon = extent_to_polygon(centre, half_width, y0, y1, shift,
-                                        tile_x0, tile_y0, zoom)
+                                        tile_x0, tile_y0, zoom, transposed)
             clipped = polygon.intersection(site_polygon)
             if clipped.is_empty:
                 continue
@@ -375,7 +405,9 @@ def detect(site_polygon, zoom=19, panel_threshold=DEFAULT_PANEL_THRESHOLD,
               f"imagery dark fraction {100 * imagery_dark_fraction:.1f}%")
 
     stats = {
-        "bearing_deg": round(bearing_deg, 3),
+        "bearing_deg": round(true_bearing_deg, 3),
+        "row_axis": "east-west" if transposed else "north-south",
+        "scan_bearing_deg": round(bearing_deg, 3),
         "profile_contrast": round(contrast, 4),
         "pitch_m": round(pitch_px * mpp, 3),
         "row_width_m": round(median_width_px * mpp, 3),
