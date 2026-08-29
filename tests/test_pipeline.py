@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from PIL import Image
-from shapely.geometry import box, mapping, shape
+from shapely.geometry import Point, Polygon, box, mapping, shape
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -310,6 +310,51 @@ def test_detect_refuses_featureless_imagery(monkeypatch, small_site):
 
     with pytest.raises(ValueError, match="no panel rows found"):
         detect.detect(small_site, zoom=ZOOM, bearing_deg=0.0, verbose=False)
+
+
+# --- heat_risk: AOI buffering -----------------------------------------------
+#
+# FortyGuard returns whole grid cells and drops the ones the AOI only partly
+# covers, so the mosaic stopped ~147 m short of this site's south edge and
+# 9.4% of the polygon came back with no covering tile. The request polygon is
+# grown so that shortfall lands outside the real site.
+
+def _local_geometries(site_fc, buffered_fc):
+    """Both polygons in metres, on one projection, for distance assertions."""
+    site = shape(site_fc["features"][0]["geometry"])
+    grown = shape(buffered_fc["features"][0]["geometry"])
+    to_local, _ = make_projector(site.centroid.x, site.centroid.y)
+    as_local = lambda g: Polygon([to_local(x, y) for x, y in g.exterior.coords])
+    return as_local(site), as_local(grown)
+
+
+def test_buffered_aoi_contains_the_whole_site():
+    site_fc = json.loads(SITE_PATH.read_text())
+    site, grown = _local_geometries(site_fc, heat_risk.buffer_aoi(site_fc, 600.0))
+    assert grown.contains(site)
+
+
+def test_buffer_grows_the_aoi_by_the_requested_distance():
+    site_fc = json.loads(SITE_PATH.read_text())
+    site, grown = _local_geometries(site_fc, heat_risk.buffer_aoi(site_fc, 600.0))
+    # Closest approach of the two boundaries is the buffer distance itself;
+    # mitred corners reach further out, capped by mitre_limit=2.
+    assert grown.exterior.distance(site.exterior) == pytest.approx(600.0, rel=1e-3)
+    assert max(site.exterior.distance(Point(c)) for c in grown.exterior.coords) <= 1200.0
+
+
+def test_buffer_keeps_the_request_polygon_small():
+    """Mitre joins, not the default round ones -- a round buffer would emit
+    ~16 vertices per corner in the request payload."""
+    site_fc = json.loads(SITE_PATH.read_text())
+    grown = shape(heat_risk.buffer_aoi(site_fc, 600.0)["features"][0]["geometry"])
+    site = shape(site_fc["features"][0]["geometry"])
+    assert len(grown.exterior.coords) <= 2 * len(site.exterior.coords)
+
+
+def test_zero_buffer_sends_the_site_unchanged():
+    site_fc = json.loads(SITE_PATH.read_text())
+    assert heat_risk.buffer_aoi(site_fc, 0.0) is site_fc
 
 
 # --- heat_risk: field selection ---------------------------------------------

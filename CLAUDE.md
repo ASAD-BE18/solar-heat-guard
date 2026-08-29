@@ -63,6 +63,13 @@ python -m pytest tests/ -q                       # offline; no API, no imagery
   tiles and clipped the site's true 1.98-3.11 h range to 2.51-2.98 h. The
   percentile basis is row-in-tile segments, and every label must say so —
   tile-weighting gives a materially different cutoff.
+  The AOI is buffered (`--aoi-buffer`, default 600 m) before the request:
+  FortyGuard returns whole grid cells and drops the ones the AOI only
+  partly covers, so the unbuffered run's mosaic stopped 147 m short of the
+  south edge and left 9.4% of the site (6.4 ha) with no covering tile.
+  Buffer by a whole multiple of `--granularity`. Scoring still uses the
+  unbuffered site; the extra tiles hold no panel rows and drop out at
+  segmentation.
 - `scripts/geo_utils.py` — local equirectangular lon/lat <-> meters projection,
   accurate enough at single-site scale (~1km).
 - Panel temperature / power-loss modelling was removed deliberately (issue #1):

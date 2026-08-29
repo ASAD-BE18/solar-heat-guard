@@ -140,6 +140,18 @@ scored-segments denominator, so ground that could not be evaluated cannot
 dilute the at-risk rate. The map paints unknown segments grey with their own
 legend entry.
 
+**AOI buffering (`--aoi-buffer`, default 600 m):** FortyGuard returns whole
+cells of its own grid and drops the ones the AOI only partly covers, so the
+returned mosaic can stop short of the boundary that was asked for -- on the
+unbuffered `2024-07-15` run it stopped up to 147 m inside the south edge and
+left 9.4% of the site (6.4 ha) with no covering tile, scored `at_risk=null`.
+The request polygon is therefore grown by a whole number of tiles so that
+shortfall falls outside the real site. Scoring is unchanged: segments still
+come from the unbuffered site's detected rows, and the extra tiles contain no
+rows, so they never enter the percentile basis. The cost is a bigger request
+-- 600 m turns this 67.7 ha site into a 431 ha AOI (~1,200 tiles instead of
+~190); `--aoi-buffer 180` covers the 147 m shortfall observed here for ~410.
+
 **Completed API results are cached** under `data/fortyguard/_response_cache/`,
 keyed by request payload, so re-running the pipeline with the same parameters
 costs no quota -- useful when iterating on the detection, the percentile, or

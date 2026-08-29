@@ -48,7 +48,7 @@ from pathlib import Path
 
 import numpy as np
 from dotenv import load_dotenv
-from shapely.geometry import mapping, shape
+from shapely.geometry import Polygon, mapping, shape
 from shapely.geometry.base import BaseMultipartGeometry
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
@@ -56,6 +56,7 @@ from shapely.strtree import STRtree
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from detect_panel_rows import MIN_SEGMENT_AREA_M2, polygon_area_m2
 from fortyguard_client import FortyGuardClient
+from geo_utils import make_projector
 
 
 # Which tile property holds the analytic value depends on which analytic was
@@ -83,6 +84,49 @@ def pick_value_field(tile_properties, analytic_type):
 def _polygon_parts(geometry):
     parts = geometry.geoms if isinstance(geometry, BaseMultipartGeometry) else [geometry]
     return [p for p in parts if p.geom_type == "Polygon" and not p.is_empty]
+
+
+def buffer_aoi(site_fc, meters):
+    """Grow the polygon sent to the heatmap API by `meters`, outward.
+
+    FortyGuard returns whole cells of its own grid and drops the ones the AOI
+    only partly covers, so the returned mosaic can stop short of the boundary
+    that was asked for. On this site the unbuffered 60 m run left 9.4% of the
+    polygon (6.4 ha) with no covering tile -- up to 147 m deep along the south
+    edge -- and every panel-row segment there scored at_risk=null. Asking for
+    a larger polygon moves that shortfall outside the real site.
+
+    Nothing downstream changes: the extra tiles fall outside the detected
+    panel rows, so they contribute no segments and never enter the percentile
+    basis. Buffer by a whole multiple of --granularity so the margin is a
+    whole number of tiles.
+
+    Mitre joins rather than the default round ones, so the request polygon
+    keeps roughly the input's vertex count instead of ~16x it.
+    """
+    if meters <= 0:
+        return site_fc
+
+    site = unary_union([shape(f["geometry"]) for f in site_fc["features"]])
+    centre = site.centroid
+    to_local, to_lonlat = make_projector(centre.x, centre.y)
+
+    grown = unary_union([
+        Polygon([to_local(x, y) for x, y in part.exterior.coords],
+                [[to_local(x, y) for x, y in ring.coords] for ring in part.interiors])
+        .buffer(meters, join_style=2, mitre_limit=2.0)
+        for part in _polygon_parts(site)
+    ])
+    # A positive buffer cannot open a hole, so the exterior ring is the whole
+    # of each grown part.
+    return {
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "properties": {"buffer_m": meters},
+            "geometry": mapping(Polygon([to_lonlat(x, y) for x, y in part.exterior.coords])),
+        } for part in _polygon_parts(grown)],
+    }
 
 
 def segment_rows_by_tile(row_features, tile_features, analytic_type,
@@ -193,6 +237,12 @@ def main():
                              "string for a single instant instead (filter_type 1)")
     parser.add_argument("--granularity", type=int, default=60, choices=[60, 80, 100],
                         help="Tile size in metres; 60 is the finest available")
+    parser.add_argument("--aoi-buffer", type=float, default=600.0,
+                        help="Metres to grow the site polygon by before sending it to the "
+                             "heatmap API, so the returned tile mosaic covers the whole site "
+                             "instead of stopping short of its edges. Use a whole multiple of "
+                             "--granularity; 0 disables. The extra tiles hold no panel rows and "
+                             "are dropped at segmentation, so scoring is unaffected")
     parser.add_argument("--analytic-type", default="exceedance",
                         choices=["tcm", "time_of_measure", "exceedance", "persistence"])
     parser.add_argument("--threshold", type=float, default=35.5,
@@ -239,10 +289,16 @@ def main():
         print("WARNING: exceedance/persistence count hours over a window; without --end-time "
               "this asks for a single instant.", file=sys.stderr)
 
+    aoi_fc = buffer_aoi(site_fc, args.aoi_buffer)
+    if args.aoi_buffer > 0:
+        print(f"AOI buffered by {args.aoi_buffer:.0f} m "
+              f"({args.aoi_buffer / args.granularity:.1f} tiles) for the request; "
+              f"scoring still uses the unbuffered site")
+
     print("submitting heatmap request...")
     client = FortyGuardClient(use_cache=not args.no_cache)
     heatmap_payload = client.heatmap_payload(
-        polygon_geojson=site_fc,
+        polygon_geojson=aoi_fc,
         date_time=date_time,
         granularity=args.granularity,
         analytic_type=args.analytic_type,
@@ -306,6 +362,7 @@ def main():
         "start_time": args.start_time,
         "end_time": args.end_time or None,
         "granularity_m": args.granularity,
+        "aoi_buffer_m": args.aoi_buffer,
         "analytic_type": args.analytic_type,
         "threshold": args.threshold,
         "direction": args.direction if is_thresholded_analytic else None,
