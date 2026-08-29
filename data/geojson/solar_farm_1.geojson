@@ -4,7 +4,7 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "solar form 2"
+        "name": "Solar farm 1"
       },
       "geometry": {
         "type": "Polygon",

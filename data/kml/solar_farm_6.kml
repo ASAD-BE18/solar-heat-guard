@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="KmlFile">
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_highlight">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4.8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0E4F3663AB4181FD4AB3_normal">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3.2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0E4F3663AB4181FD4AB3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="0F4F79AF1841820AB31F">
+		<name>Solar farm 6</name>
+		<LookAt>
+			<longitude>-103.3195851043271</longitude>
+			<latitude>30.95872565306115</latitude>
+			<altitude>927.1518959942998</altitude>
+			<heading>359.7169674908941</heading>
+			<tilt>0</tilt>
+			<gx:fovy>30.00000000000243</gx:fovy>
+			<range>796.1555443695397</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_0E4F3663AB4181FD4AB3</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-103.3209037018786,30.95286485689611,0 -103.3081272031612,30.95315076410695,0 -103.3081609300684,30.95395808840366,0 -103.3096935328274,30.95393420869684,0 -103.3097410691094,30.95621687844874,0 -103.3114327333068,30.95618024699682,0 -103.3115062833867,30.95839490673419,0 -103.3098266538134,30.9584233887237,0 -103.3098475278761,30.95921131741979,0 -103.3066643877093,30.95925923135158,0 -103.3065952174944,30.95698460871527,0 -103.304985711799,30.95703625814898,0 -103.3049496392282,30.95550132320073,0 -103.3016872275046,30.95559555880081,0 -103.301659017827,30.95309002407654,0 -103.2936103664252,30.9533062241632,0 -103.2936844595765,30.95573735742506,0 -103.2921011470156,30.95578477391413,0 -103.2923554226464,30.96345316459069,0 -103.305167250723,30.96315700883167,0 -103.3051579336652,30.96240323245985,0 -103.3084084914639,30.96233002124156,0 -103.3083648155507,30.96156055867913,0 -103.3099604258384,30.96153278005126,0 -103.3099612540026,30.96078894045882,0 -103.3147756531884,30.96065811905136,0 -103.3147570230428,30.95989460518106,0 -103.3163741582727,30.95985802014984,0 -103.3163474514584,30.95914091322188,0 -103.3210834578437,30.95901281262207,0 -103.3209037018786,30.95286485689611,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>

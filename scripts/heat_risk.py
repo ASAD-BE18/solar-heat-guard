@@ -48,14 +48,15 @@ from pathlib import Path
 
 import numpy as np
 from dotenv import load_dotenv
-from shapely.geometry import mapping, shape
+from shapely.geometry import Polygon, mapping, shape
 from shapely.geometry.base import BaseMultipartGeometry
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from detect_panel_rows import MIN_SEGMENT_AREA_M2, polygon_area_m2
-from fortyguard_client import FortyGuardClient
+from fortyguard_client import FortyGuardClient, FortyGuardError
+from geo_utils import make_projector
 
 
 # Which tile property holds the analytic value depends on which analytic was
@@ -83,6 +84,95 @@ def pick_value_field(tile_properties, analytic_type):
 def _polygon_parts(geometry):
     parts = geometry.geoms if isinstance(geometry, BaseMultipartGeometry) else [geometry]
     return [p for p in parts if p.geom_type == "Polygon" and not p.is_empty]
+
+
+def buffer_aoi(site_fc, meters):
+    """Grow the polygon sent to the heatmap API by `meters`, outward.
+
+    FortyGuard returns whole cells of its own grid and drops the ones the AOI
+    only partly covers, so the returned mosaic can stop short of the boundary
+    that was asked for. On this site the unbuffered 60 m run left 9.4% of the
+    polygon (6.4 ha) with no covering tile -- up to 147 m deep along the south
+    edge -- and every panel-row segment there scored at_risk=null. Asking for
+    a larger polygon moves that shortfall outside the real site.
+
+    Nothing downstream changes: the extra tiles fall outside the detected
+    panel rows, so they contribute no segments and never enter the percentile
+    basis. Buffer by a whole multiple of --granularity so the margin is a
+    whole number of tiles.
+
+    Mitre joins rather than the default round ones, so the request polygon
+    keeps roughly the input's vertex count instead of ~16x it.
+    """
+    if meters <= 0:
+        return site_fc
+
+    site = unary_union([shape(f["geometry"]) for f in site_fc["features"]])
+    centre = site.centroid
+    to_local, to_lonlat = make_projector(centre.x, centre.y)
+
+    grown = unary_union([
+        Polygon([to_local(x, y) for x, y in part.exterior.coords],
+                [[to_local(x, y) for x, y in ring.coords] for ring in part.interiors])
+        .buffer(meters, join_style=2, mitre_limit=2.0)
+        for part in _polygon_parts(site)
+    ])
+    # A positive buffer cannot open a hole, so the exterior ring is the whole
+    # of each grown part.
+    return {
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "properties": {"buffer_m": meters},
+            "geometry": mapping(Polygon([to_lonlat(x, y) for x, y in part.exterior.coords])),
+        } for part in _polygon_parts(grown)],
+    }
+
+
+def calibrate_threshold(client, aoi_fc, date_time, granularity, site_polygon,
+                        interval_seconds=5, timeout_seconds=180):
+    """Measure this site's own mean temperature for the window being scored.
+
+    `exceedance` counts hours above a threshold, and choosing that number by
+    hand is the wrong kind of precision: the API reports ambient/land-surface
+    temperature, not panel temperature, and damage thresholds are specific to
+    the hardware. What the threshold is *for* is making "exceedance" mean
+    "hours this spot ran hotter than this site typically does that day" -- and
+    that reference is a measurement, so it is taken rather than picked.
+
+    Averaged over the tiles that actually cover the site: the request AOI is
+    buffered, and the margin tiles are ground the operator does not own.
+
+    The statistic is each tile's PEAK over the window, not its mean, and that
+    choice is the difference between a result and a flat map. Exceedance
+    counts hours above the threshold, so the threshold has to sit where the
+    diurnal curve is flat -- near the daily peak -- for a small spatial
+    temperature difference to move the crossing time at all. Measured on site
+    5, 2025-07-15: the window mean (29.09 C) sits on the steep morning ramp,
+    where 0.07 C of spatial spread shifts the crossing by seconds and every
+    tile came back at exactly 7.00 h. The mean of the tiles' own peaks
+    (34.21 C, spread 0.25) is the discriminating point. It is also what the
+    hand-picked 35.5 C was on 2024-07-15: a 14:00 peak reading, not a mean.
+
+    Costs one extra API request per run. Returns (threshold, n_tiles, field).
+    """
+    payload = client.heatmap_payload(
+        polygon_geojson=aoi_fc, date_time=date_time,
+        granularity=granularity, analytic_type="tcm")
+    result = client.run("heatmap", payload, interval_seconds, timeout_seconds)
+    tiles = (result.get("map_data") or {}).get("features") or []
+    if not tiles:
+        raise FortyGuardError(
+            "calibration returned 0 tiles -- this date has no data yet; pick an earlier "
+            "--date or pass --threshold explicitly")
+    field = ("max_temperature" if "max_temperature" in tiles[0]["properties"]
+             else pick_value_field(tiles[0]["properties"], "tcm"))
+    values = [t["properties"][field] for t in tiles
+              if shape(t["geometry"]).intersects(site_polygon)
+              and t["properties"].get(field) is not None]
+    if not values:
+        raise FortyGuardError("calibration returned no tile covering the site polygon")
+    return float(np.mean(values)), len(values), field
 
 
 def segment_rows_by_tile(row_features, tile_features, analytic_type,
@@ -193,12 +283,19 @@ def main():
                              "string for a single instant instead (filter_type 1)")
     parser.add_argument("--granularity", type=int, default=60, choices=[60, 80, 100],
                         help="Tile size in metres; 60 is the finest available")
+    parser.add_argument("--aoi-buffer", type=float, default=600.0,
+                        help="Metres to grow the site polygon by before sending it to the "
+                             "heatmap API, so the returned tile mosaic covers the whole site "
+                             "instead of stopping short of its edges. Use a whole multiple of "
+                             "--granularity; 0 disables. The extra tiles hold no panel rows and "
+                             "are dropped at segmentation, so scoring is unaffected")
     parser.add_argument("--analytic-type", default="exceedance",
                         choices=["tcm", "time_of_measure", "exceedance", "persistence"])
-    parser.add_argument("--threshold", type=float, default=35.5,
-                        help="FortyGuard exceedance/persistence threshold, deg C -- set this to the "
-                             "site's own measured average temperature for the window, not an "
-                             "arbitrary number (see README)")
+    parser.add_argument("--threshold", default="auto",
+                        help="FortyGuard exceedance/persistence threshold, deg C. 'auto' (the "
+                             "default) spends one extra request to measure this site's own mean "
+                             "temperature for the same window and uses that, so the run has no "
+                             "hand-picked number in it. Pass a number to override")
     parser.add_argument("--direction", default="above", choices=["above", "below"],
                         help="Only used by exceedance/persistence")
     parser.add_argument("--risk-percentile", type=float, default=75.0,
@@ -235,14 +332,38 @@ def main():
         date_time["filter_type"] = 1
 
     is_thresholded_analytic = args.analytic_type in ("exceedance", "persistence")
+    auto_threshold = str(args.threshold).lower() == "auto"
+    if not auto_threshold:
+        try:
+            args.threshold = float(args.threshold)
+        except ValueError:
+            parser.error(f"--threshold must be a number or 'auto', got {args.threshold!r}")
+    elif not is_thresholded_analytic:
+        # tcm/time_of_measure ignore the threshold; nothing to calibrate against.
+        args.threshold = None
     if is_thresholded_analytic and not args.end_time:
         print("WARNING: exceedance/persistence count hours over a window; without --end-time "
               "this asks for a single instant.", file=sys.stderr)
 
-    print("submitting heatmap request...")
+    aoi_fc = buffer_aoi(site_fc, args.aoi_buffer)
+    if args.aoi_buffer > 0:
+        print(f"AOI buffered by {args.aoi_buffer:.0f} m "
+              f"({args.aoi_buffer / args.granularity:.1f} tiles) for the request; "
+              f"scoring still uses the unbuffered site")
+
     client = FortyGuardClient(use_cache=not args.no_cache)
+    site_polygon = unary_union([shape(f["geometry"]) for f in site_fc["features"]])
+
+    if auto_threshold and is_thresholded_analytic:
+        print("calibrating threshold from this site's own temperature...")
+        args.threshold, n_calibration_tiles, calibration_field = calibrate_threshold(
+            client, aoi_fc, date_time, args.granularity, site_polygon)
+        print(f"  site mean {calibration_field} over {n_calibration_tiles} covering tiles: "
+              f"{args.threshold:.2f} deg C -- using that as --threshold")
+
+    print("submitting heatmap request...")
     heatmap_payload = client.heatmap_payload(
-        polygon_geojson=site_fc,
+        polygon_geojson=aoi_fc,
         date_time=date_time,
         granularity=args.granularity,
         analytic_type=args.analytic_type,
@@ -281,6 +402,18 @@ def main():
         # top --risk-percentile of the site's own segments. Segments with no
         # tile are excluded from the percentile and stay at_risk=null.
         values = [s["value"] for s in segments if s["value"] is not None]
+        # A percentile of a constant field is that same constant, and every
+        # segment then clears it -- "100% of this farm is a hotspot", which is
+        # not a finding, it is a degenerate comparison. It means the analytic
+        # separated nothing: usually --threshold sitting above everything the
+        # site reached that day. Refuse rather than emit a confident map.
+        if max(values) == min(values):
+            print(f"ERROR: every scored segment has the same {args.analytic_type} value "
+                  f"({values[0]:.2f}), so there is nothing to rank site-relative. With "
+                  f"--threshold {args.threshold} nothing at this site crossed it on "
+                  f"{args.date}; measure the site's own average for the window with "
+                  f"--analytic-type tcm and set --threshold to that.", file=sys.stderr)
+            sys.exit(1)
         percentile_cutoff = float(np.percentile(values, args.risk_percentile))
         print(f"{len(values)} scored segments over {len(tiles_used)} tiles, "
               f"values {min(values):.2f}-{max(values):.2f}, "
@@ -306,8 +439,11 @@ def main():
         "start_time": args.start_time,
         "end_time": args.end_time or None,
         "granularity_m": args.granularity,
+        "aoi_buffer_m": args.aoi_buffer,
         "analytic_type": args.analytic_type,
         "threshold": args.threshold,
+        "threshold_source": (f"measured site mean {calibration_field} (tcm, same window)"
+                             if auto_threshold and is_thresholded_analytic else "given"),
         "direction": args.direction if is_thresholded_analytic else None,
         "risk_percentile": args.risk_percentile if is_thresholded_analytic else None,
         "percentile_cutoff": percentile_cutoff,

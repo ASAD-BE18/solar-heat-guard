@@ -21,16 +21,20 @@
   #panel .stat { margin-top: 8px; color: #333; }
   #panel .toggle-row { display: flex; align-items: center; gap: 6px; margin: 8px 0 2px; }
   #panel .caveat { margin-top: 8px; color: #666; font-size: 11px; line-height: 1.35; }
+  #site-select { width: 100%; font: inherit; padding: 3px; margin-bottom: 2px; }
+  #loading { color: #666; font-style: italic; }
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div id="panel">
   <h1>solar-heat-guard</h1>
+  <select id="site-select"></select>
   <div class="toggle-row">
     <input type="checkbox" id="overlay-toggle" checked>
     <label for="overlay-toggle">Show risk overlay</label>
   </div>
+  <div id="loading"></div>
   <div id="meta" class="stat"></div>
   <div id="legend"></div>
   <div id="stats" class="stat"></div>
@@ -39,9 +43,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
         crossorigin="anonymous"></script>
-<script src="data.js"></script>
+<script src="sites.js"></script>
 <script>
 const NO_DATA_COLOR = "#9e9e9e";
+const HECTARE = 10000;
 
 // at_risk is deliberately three-state: true / false / null. A segment no
 // heatmap tile covers is UNKNOWN, not safe, and must never render in the same
@@ -57,114 +62,161 @@ L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
   maxZoom: 20,
 }).addTo(map);
 
-L.geoJSON(SITE_BOUNDARY, {
-  style: { color: "#333", weight: 2, fillOpacity: 0 },
-}).addTo(map);
+let boundaryLayer = null;
+let segmentsLayer = null;
 
-const md = ROW_SEGMENTS.metadata;
-const geom = (md && md.row_geometry) || {};
+// Each site's data is its own file: the six farms together are ~9.7 MB, so
+// only the selected one is ever fetched.
+function loadSite(id) {
+  if (SITE_DATA[id]) return Promise.resolve(SITE_DATA[id]);
+  return new Promise((resolve, reject) => {
+    const tag = document.createElement("script");
+    tag.src = "site_" + id + ".js";
+    tag.onload = () => SITE_DATA[id] ? resolve(SITE_DATA[id])
+                                     : reject(new Error(id + " loaded but set no data"));
+    tag.onerror = () => reject(new Error("could not load site_" + id + ".js"));
+    document.body.appendChild(tag);
+  });
+}
 
-const segmentsLayer = L.geoJSON(ROW_SEGMENTS, {
-  style: f => {
-    const c = segmentColor(f.properties);
-    return { color: c, weight: 1, fillColor: c, fillOpacity: 0.55 };
-  },
-  onEachFeature: (f, layer) => {
-    const p = f.properties;
-    let html = `<b>Row ${p.row_index}</b>`;
-    if (p.tile_id != null) html += ` <span style="color:#777">(tile ${p.tile_id})</span>`;
-    html += `<br><span style="color:#777">${p.area_m2} m&sup2; of panel</span><br>`;
-    if (p.at_risk == null) {
-      html += `<i>No heatmap tile covers this stretch &mdash; unknown, not cleared.</i>`;
-    } else {
-      html += `${p.value_field}: ${p.tile_value}<br>`;
-      const flagLabel = (md && md.risk_percentile != null) ? "HOTSPOT" : "AT RISK";
-      html += `<b>${p.at_risk ? flagLabel : "ok"}</b>`;
-    }
-    layer.bindPopup(html);
-  },
-}).addTo(map);
+function render(data) {
+  const rowSegments = data.segments;
+  const md = rowSegments.metadata;
+  const geom = (md && md.row_geometry) || {};
 
-map.fitBounds(segmentsLayer.getBounds());
+  if (boundaryLayer) map.removeLayer(boundaryLayer);
+  if (segmentsLayer) map.removeLayer(segmentsLayer);
 
-document.getElementById("overlay-toggle").addEventListener("change", e => {
-  if (e.target.checked) {
-    segmentsLayer.addTo(map);
-  } else {
-    map.removeLayer(segmentsLayer);
+  boundaryLayer = L.geoJSON(data.boundary, {
+    style: { color: "#333", weight: 2, fillOpacity: 0 },
+  }).addTo(map);
+
+  const flagWord = (md && md.risk_percentile != null) ? "flagged as hotspots" : "at risk";
+
+  segmentsLayer = L.geoJSON(rowSegments, {
+    style: f => {
+      const c = segmentColor(f.properties);
+      return { color: c, weight: 1, fillColor: c, fillOpacity: 0.55 };
+    },
+    onEachFeature: (f, layer) => {
+      const p = f.properties;
+      let html = `<b>Row ${p.row_index}</b>`;
+      if (p.tile_id != null) html += ` <span style="color:#777">(tile ${p.tile_id})</span>`;
+      html += `<br><span style="color:#777">${p.area_m2} m&sup2; of panel</span><br>`;
+      if (p.at_risk == null) {
+        html += `<i>No heatmap tile covers this stretch &mdash; unknown, not cleared.</i>`;
+      } else {
+        html += `${p.value_field}: ${p.tile_value}<br>`;
+        const flagLabel = (md && md.risk_percentile != null) ? "HOTSPOT" : "AT RISK";
+        html += `<b>${p.at_risk ? flagLabel : "ok"}</b>`;
+      }
+      layer.bindPopup(html);
+    },
+  });
+  if (document.getElementById("overlay-toggle").checked) segmentsLayer.addTo(map);
+  map.fitBounds(segmentsLayer.getBounds());
+
+  const props = rowSegments.features.map(f => f.properties);
+  const atRiskCount = props.filter(p => p.at_risk === true).length;
+  const noDataCount = props.filter(p => p.at_risk == null).length;
+  const scoredCount = props.length - noDataCount;
+  const areaOf = pred => props.filter(pred).reduce((a, p) => a + (p.area_m2 || 0), 0);
+
+  // Denominator is SCORED segments, not all of them -- folding unmeasurable
+  // ground into the denominator would quietly understate the at-risk rate.
+  let statsHtml = `${atRiskCount} / ${scoredCount} scored segments ${flagWord}`;
+  const hotArea = areaOf(p => p.at_risk === true);
+  const scoredArea = areaOf(p => p.at_risk != null);
+  if (scoredArea) {
+    statsHtml += `<br><b>${(hotArea / HECTARE).toFixed(2)} ha</b> of ` +
+      `${(scoredArea / HECTARE).toFixed(2)} ha of panel`;
   }
+  if (noDataCount) {
+    statsHtml += `<br><span style="color:#666">${noDataCount} segment(s) with no data (not counted)</span>`;
+  }
+  document.getElementById("stats").innerHTML = statsHtml;
+
+  if (md) {
+    const timeWindow = md.end_time ? `${md.start_time}&ndash;${md.end_time}` : md.start_time;
+    let lines = [
+      `<b>Date:</b> ${md.date} ${timeWindow}`,
+      `<b>Analysis:</b> ${md.analytic_type}${md.direction ? " (" + md.direction + ")" : ""}`,
+      `<b>Granularity:</b> ${md.granularity_m} m`,
+    ];
+    if (md.risk_percentile != null) {
+      // The threshold is measured, not chosen: say which, so nobody reads the
+      // number as an externally meaningful damage limit.
+      const src = md.threshold_source === "given" ? "given" : "this site's own measured mean";
+      lines.push(`<b>Metric:</b> hours above ${Number(md.threshold).toFixed(2)}&deg;C (${src})`);
+      // The percentile is taken over row-in-tile segments. Segments are near
+      // uniform in area, so this is close to ranking by panel area -- but the
+      // basis still has to be stated, since a tile-weighted cutoff differs.
+      lines.push(`<b>Hotspot cutoff:</b> top ${(100 - md.risk_percentile).toFixed(0)}% of this site's own segments (&ge; ${md.percentile_cutoff?.toFixed(2)} hrs)`);
+    } else if (md.analytic_type === "tcm") {
+      lines.push(`<b>Risk cutoff:</b> ${md.threshold}&deg;C`);
+    } else {
+      lines.push(`<b>Risk cutoff:</b> &ge; ${md.threshold} hrs`);
+    }
+    if (geom.pitch_m) {
+      lines.push(`<b>Rows:</b> ${geom.n_row_lines} detected ${geom.row_axis || ""}, ` +
+        `${geom.pitch_m} m pitch, ${geom.row_width_m} m wide, bearing ${geom.bearing_deg}&deg;`);
+    }
+    document.getElementById("meta").innerHTML = lines.join("<br>");
+
+    // Each segment carries the value of the tile that actually covers it, but
+    // rows are far finer than those tiles across the site. Say where the real
+    // resolution limit is rather than letting per-row polygons imply per-row
+    // measurement.
+    if (md.n_tiles_with_rows && md.granularity_m) {
+      document.getElementById("caveat").innerHTML =
+        `Each segment is one panel row where it crosses one ${md.granularity_m} m ` +
+        `heatmap tile, so it carries that tile's own measurement &mdash; ` +
+        `${scoredCount} segments over ${md.n_tiles_with_rows} tiles that cover this site ` +
+        `(${md.n_tiles} returned for the buffered request). ` +
+        `Rows sit ${geom.pitch_m} m apart, so neighbouring rows inside one tile ` +
+        `still share a value.`;
+    }
+  } else {
+    document.getElementById("meta").textContent = "(no run metadata in this dataset)";
+  }
+
+  const legend = document.getElementById("legend");
+  legend.innerHTML = `
+    <div class="legend-item"><div class="swatch" style="background:#d73027"></div>${flagWord}</div>
+    <div class="legend-item"><div class="swatch" style="background:#4575b4"></div>ok</div>`;
+  if (noDataCount) {
+    legend.innerHTML += `
+      <div class="legend-item"><div class="swatch" style="background:${NO_DATA_COLOR}"></div>no data (unknown)</div>`;
+  }
+}
+
+const select = document.getElementById("site-select");
+SITES.forEach(s => {
+  const opt = document.createElement("option");
+  opt.value = s.id;
+  const ha = s.scored_area_m2 ? ` (${(s.scored_area_m2 / HECTARE).toFixed(1)} ha)` : "";
+  opt.textContent = s.name + ha;
+  select.appendChild(opt);
 });
 
-const props = ROW_SEGMENTS.features.map(f => f.properties);
-const atRiskCount = props.filter(p => p.at_risk === true).length;
-const noDataCount = props.filter(p => p.at_risk == null).length;
-const scoredCount = props.length - noDataCount;
-const flagWord = (md && md.risk_percentile != null) ? "flagged as hotspots" : "at risk";
-const areaOf = pred => props.filter(pred).reduce((a, p) => a + (p.area_m2 || 0), 0);
-const HECTARE = 10000;
-
-// Denominator is SCORED segments, not all of them -- folding unmeasurable
-// ground into the denominator would quietly understate the at-risk rate.
-let statsHtml = `${atRiskCount} / ${scoredCount} scored segments ${flagWord}`;
-const hotArea = areaOf(p => p.at_risk === true);
-const scoredArea = areaOf(p => p.at_risk != null);
-if (scoredArea) {
-  statsHtml += `<br><b>${(hotArea / HECTARE).toFixed(2)} ha</b> of ` +
-    `${(scoredArea / HECTARE).toFixed(2)} ha of panel`;
-}
-if (noDataCount) {
-  statsHtml += `<br><span style="color:#666">${noDataCount} segment(s) with no data (not counted)</span>`;
-}
-document.getElementById("stats").innerHTML = statsHtml;
-
-if (md) {
-  const timeWindow = md.end_time ? `${md.start_time}–${md.end_time}` : md.start_time;
-  let lines = [
-    `<b>Date:</b> ${md.date} ${timeWindow}`,
-    `<b>Analysis:</b> ${md.analytic_type}${md.direction ? " (" + md.direction + ")" : ""}`,
-    `<b>Granularity:</b> ${md.granularity_m} m`,
-  ];
-  if (md.risk_percentile != null) {
-    lines.push(`<b>Metric:</b> hours above ${md.threshold}&deg;C (site's own measured average)`);
-    // The percentile is taken over row-in-tile segments. Segments are near
-    // uniform in area, so this is close to ranking by panel area -- but the
-    // basis still has to be stated, since a tile-weighted cutoff differs.
-    lines.push(`<b>Hotspot cutoff:</b> top ${(100 - md.risk_percentile).toFixed(0)}% of this site's own segments (&ge; ${md.percentile_cutoff?.toFixed(2)} hrs)`);
-  } else if (md.analytic_type === "tcm") {
-    lines.push(`<b>Risk cutoff:</b> ${md.threshold}&deg;C`);
-  } else {
-    lines.push(`<b>Risk cutoff:</b> &ge; ${md.threshold} hrs`);
-  }
-  if (geom.pitch_m) {
-    lines.push(`<b>Rows:</b> ${geom.n_row_lines} detected, ${geom.pitch_m} m pitch, ` +
-      `${geom.row_width_m} m wide, bearing ${geom.bearing_deg}&deg;`);
-  }
-  document.getElementById("meta").innerHTML = lines.join("<br>");
-
-  // Each segment carries the value of the tile that actually covers it, but
-  // rows are far finer than those tiles across the site. Say where the real
-  // resolution limit is rather than letting per-row polygons imply per-row
-  // measurement.
-  if (md.n_tiles_with_rows && md.granularity_m) {
-    document.getElementById("caveat").innerHTML =
-      `Each segment is one panel row where it crosses one ${md.granularity_m} m ` +
-      `heatmap tile, so it carries that tile's own measurement &mdash; ` +
-      `${scoredCount} segments over ${md.n_tiles_with_rows} of ${md.n_tiles} tiles. ` +
-      `Rows sit ${geom.pitch_m} m apart, so neighbouring rows inside one tile ` +
-      `still share a value.`;
-  }
-} else {
-  document.getElementById("meta").textContent = "(no run metadata in this dataset)";
+function show(id) {
+  document.getElementById("loading").textContent = "loadingâ€¦";
+  loadSite(id).then(data => {
+    document.getElementById("loading").textContent = "";
+    render(data);
+  }).catch(err => {
+    document.getElementById("loading").textContent = err.message;
+  });
 }
 
-const legend = document.getElementById("legend");
-legend.innerHTML = `
-  <div class="legend-item"><div class="swatch" style="background:#d73027"></div>${flagWord}</div>
-  <div class="legend-item"><div class="swatch" style="background:#4575b4"></div>ok</div>`;
-if (noDataCount) {
-  legend.innerHTML += `
-    <div class="legend-item"><div class="swatch" style="background:${NO_DATA_COLOR}"></div>no data (unknown)</div>`;
-}
+select.addEventListener("change", e => show(e.target.value));
+document.getElementById("overlay-toggle").addEventListener("change", e => {
+  if (!segmentsLayer) return;
+  if (e.target.checked) segmentsLayer.addTo(map);
+  else map.removeLayer(segmentsLayer);
+});
+
+if (SITES.length) show(SITES[0].id);
 </script>
 </body>
 </html>
