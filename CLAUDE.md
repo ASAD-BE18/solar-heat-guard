@@ -69,7 +69,9 @@ python -m pytest tests/ -q                       # offline; no API, no imagery
   south edge and left 9.4% of the site (6.4 ha) with no covering tile.
   Buffer by a whole multiple of `--granularity`. Scoring still uses the
   unbuffered site; the extra tiles hold no panel rows and drop out at
-  segmentation.
+  segmentation. Confirmed live on 2026-08-29: the 600 m request
+  returned 1,040 tiles, 213 of which hold rows, and left zero unknown
+  segments against 173 unbuffered.
 - `scripts/geo_utils.py` — local equirectangular lon/lat <-> meters projection,
   accurate enough at single-site scale (~1km).
 - Panel temperature / power-loss modelling was removed deliberately (issue #1):

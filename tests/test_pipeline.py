@@ -661,12 +661,33 @@ def test_committed_heat_risk_output_is_self_consistent():
         assert (p["tile_id"] is None) == (p["at_risk"] is None)
 
 
-def test_committed_output_uses_every_tile_it_received():
-    """The regression this rework exists for: with centroid lookup this was
-    21 of 176. Any drop below full coverage means rows are being scored from
-    tiles that do not cover them again."""
+def test_committed_output_uses_every_tile_that_covers_the_site():
+    """The regression this rework exists for: centroid lookup scored 1,244
+    rows from 21 tiles. The AOI is buffered now, so most returned tiles fall
+    outside the site by design and n_tiles_with_rows < n_tiles is expected --
+    what must still hold is that the tiles actually used blanket the site,
+    and that rows were split rather than point-sampled."""
+    fc = json.loads(HEAT_RISK_PATH.read_text())
+    md = fc["metadata"]
+    site = shape(json.loads(SITE_PATH.read_text())["features"][0]["geometry"])
+    used = {f["properties"]["tile_id"] for f in fc["features"]
+            if f["properties"]["tile_id"] is not None}
+    assert len(used) == md["n_tiles_with_rows"]
+    # Rows are split at tile boundaries, not matched whole to one tile.
+    assert md["n_segments"] > 2 * md["n_panel_rows"]
+    # Whatever tiles were used have to add up to at least the site's area;
+    # centroid lookup's 21 tiles covered a twelfth of it.
+    assert len(used) * md["granularity_m"] ** 2 >= detect.polygon_area_m2(site)
+
+
+def test_committed_output_has_no_unscored_segment_left():
+    """What the AOI buffer bought: the unbuffered run left 173 segments --
+    9.4% of the site, up to 147 m deep along the south edge -- with no
+    covering tile. Grown past the boundary, the mosaic measures all of it."""
     md = json.loads(HEAT_RISK_PATH.read_text())["metadata"]
-    assert md["n_tiles_with_rows"] == md["n_tiles"]
+    assert md["aoi_buffer_m"] > 0
+    assert md["n_no_data"] == 0
+    assert md["n_scored"] == md["n_segments"]
 
 
 def test_committed_output_spans_the_full_tile_range():

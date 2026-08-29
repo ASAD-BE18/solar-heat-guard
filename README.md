@@ -97,7 +97,7 @@ Dependencies are pinned. For the test suite:
 
 ```bash
 ./.venv/Scripts/pip install -r requirements-dev.txt
-./.venv/Scripts/python -m pytest tests/ -q     # 49 tests, fully offline
+./.venv/Scripts/python -m pytest tests/ -q     # 54 tests, fully offline
 ```
 
 ## Usage
@@ -149,8 +149,10 @@ The request polygon is therefore grown by a whole number of tiles so that
 shortfall falls outside the real site. Scoring is unchanged: segments still
 come from the unbuffered site's detected rows, and the extra tiles contain no
 rows, so they never enter the percentile basis. The cost is a bigger request
--- 600 m turns this 67.7 ha site into a 431 ha AOI (~1,200 tiles instead of
-~190); `--aoi-buffer 180` covers the 147 m shortfall observed here for ~410.
+-- 600 m turns this 67.7 ha site into a 431 ha AOI, and FortyGuard returned
+1,040 tiles for it instead of 176. It closed the gap completely: **zero**
+unknown segments, against 173 before. `--aoi-buffer 180` would cover the
+146.8 m shortfall measured here for roughly a third of the tiles.
 
 **Completed API results are cached** under `data/fortyguard/_response_cache/`,
 keyed by request payload, so re-running the pipeline with the same parameters
@@ -171,14 +173,14 @@ site's own typical temperature." A too-high threshold (we tried 40°C) returns
 0 hours for every tile -- a real result, not a bug, but not useful for
 hotspot detection.
 
-**Real result on `2024-07-15`, 06:00-18:00, granularity 60 m:** FortyGuard
-returned 176 tiles with exceedance-hours (above 35.5°C) ranging 1.98-3.11.
-The 1,244 detected panel-row runs split into **2,882 row-in-tile segments**,
-of which 2,709 fell inside a returned tile — spread over **all 176 tiles**,
-spanning the full 1.98-3.11 range. The top-quartile cutoff was 2.98 hours:
-**686 of 2,709 scored segments (25%) flagged as hotspots, covering 6.82 ha of
-the 25.59 ha of scored panel area (27%)**, with 173 segments reported as
-unknown (no covering tile).
+**Real result on `2024-07-15`, 06:00-18:00, granularity 60 m, `--aoi-buffer
+600`:** FortyGuard returned 1,040 tiles with exceedance-hours (above 35.5°C)
+ranging 1.88-3.11; 213 of them contain panel rows, the rest being the buffer
+margin outside the site. The 1,244 detected panel-row runs split into **2,952
+row-in-tile segments, every one of them inside a returned tile** — no unknown
+segments left, against 173 on the unbuffered run. The top-quartile cutoff was
+2.98 hours: **750 of 2,952 scored segments (25%) flagged as hotspots, covering
+7.14 ha of the 27.78 ha of scored panel area (26%)**.
 
 ## How panel rows are detected
 
