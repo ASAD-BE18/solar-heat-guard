@@ -213,6 +213,134 @@ every tile under it came back with the same value, so there was nothing to
 rank. See "Known limitations" -- and read the date-stability entry there
 before presenting any of these numbers as an operational output.
 
+## One real API request and response
+
+The exact exchange behind farm 1's row in the table above. The request body is
+reproduced verbatim from the payload the client sent -- it is what regenerates
+the cached result `data/fortyguard/_response_cache/heatmap_1830dd9c...json`,
+whose filename is a hash of that payload -- and the response below is that
+cached result, trimmed to one tile of 1,040. The API key travels in the
+`api-key` header; it never appears in a payload, a cache file, or this
+repository.
+
+**1. Submit the job** -- `POST {FORTYGUARD_API_BASE}/v1/heatmap`
+
+```http
+POST /v1/heatmap HTTP/1.1
+api-key: <FORTYGUARD_API_KEY>
+Content-Type: application/json
+```
+
+```json
+{
+  "polygon_aoi": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "buffer_m": 600.0
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-103.28975428622604, 30.949544701221253],
+              [-103.290541223709, 30.969598094568852],
+              [-103.28400900928438, 30.96972910775077],
+              [-103.28401093807014, 30.96977827081369],
+              [-103.27856197711782, 30.96983835600408],
+              [-103.27438670929634, 30.969922097150206],
+              [-103.27438604733271, 30.969884403597078],
+              [-103.26965300396915, 30.969936594430173],
+              [-103.26915262989337, 30.95302633818515],
+              [-103.27099553636, 30.95299622091443],
+              [-103.27099372731934, 30.952435430027123],
+              [-103.27249529292946, 30.9523632027385],
+              [-103.27246755420668, 30.95078084261428],
+              [-103.27395830184491, 30.950727627861784],
+              [-103.27394365632988, 30.949922562400047],
+              [-103.28975428622604, 30.949544701221253]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "date_time": {
+    "start_date": "2025-07-15",
+    "start_time": "06:00",
+    "end_time": "18:00",
+    "filter_type": 2
+  },
+  "granularity": 60,
+  "analytic_type": "exceedance",
+  "threshold": 34.45857351598173,
+  "direction": "above"
+}
+```
+
+Response -- the job is asynchronous, so this returns an id, not a result:
+
+```json
+{
+  "error": false,
+  "data": { "activity_id": "c18ddce0-b599-42b7-b540-55c9591560ae" }
+}
+```
+
+**2. Poll** -- `GET /v1/status/c18ddce0-b599-42b7-b540-55c9591560ae` every 5 s
+until `status` is `Completed` (`Processing` until then).
+
+**3. Read `data.result`** -- 1,040 tiles plus a stats block:
+
+```json
+{
+  "map_data": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "id": "0",
+        "type": "Feature",
+        "properties": {
+          "tile_id": 0,
+          "value": -0.0003
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [-103.28867524739704, 30.95096899474387],
+              [-103.288046130507, 30.95096066161924],
+              [-103.28803638244989, 30.951507209279594],
+              [-103.28866550291792, 30.951515542583515],
+              [-103.28867524739704, 30.95096899474387]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "stats_data": {
+    "activity_id": "c18ddce0-b599-42b7-b540-55c9591560ae",
+    "analytic_type": "exceedance",
+    "units": "hour",
+    "n_cells": 1040,
+    "min": -0.1306,
+    "max": 1.1073,
+    "mean": 0.5416266346153846
+  }
+}
+```
+
+`value` is exceedance-hours: hours between 06:00 and 18:00 that this 60 m cell
+ran above 34.46 C -- the site's own measured mean daily peak, not a chosen
+number. Negative means the cell never reached the threshold and FortyGuard
+reports the shortfall from its interpolated diurnal curve rather than clamping
+to zero; see the threshold notes above. That threshold came from a first
+request with `analytic_type: "tcm"` over the same AOI and window, so one
+scored site costs two heatmap requests.
+
 ## How panel rows are detected
 
 FortyGuard's segmentation has no "solar panel" class, so the geometry is
